@@ -6,6 +6,8 @@ public class EditorMenu : UIMenu
 	public SaveSongData_Overlay saveSongData_Overlay;
 	public LoadSongData_Overlay loadSongData_Overlay;
 
+	public EditorBar editorBar;
+
 	public UIButton saveButton;
 	public UIButton loadButton;
 
@@ -22,6 +24,8 @@ public class EditorMenu : UIMenu
 
 		saveSongData_Overlay.gameObject.SetActive (false);
 		loadSongData_Overlay.gameObject.SetActive (false);
+
+		editorBar.init ();
 
 		saveButton.onClick += onSaveButtonClick;
 		loadButton.onClick += onLoadButtonClick;
