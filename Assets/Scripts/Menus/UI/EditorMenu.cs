@@ -11,6 +11,15 @@ public class EditorMenu : UIMenu
 	public UIButton saveButton;
 	public UIButton loadButton;
 
+	public UIButton dottedMinimButton;
+	public UIButton minimButton;
+	public UIButton dottedCrotchetButton;
+	public UIButton crotchedButton;
+	public UIButton dottedQuaverButton;
+	public UIButton quaverButton;
+	public UIButton dottedSemiquaverButton;
+	public UIButton semiquaverButton;
+
 	private SongData songData;
 
 	void Start()

@@ -46,7 +46,7 @@ public class EditorBar : MonoBehaviour
 	private void onNoteButtonClick(int indX, int indY)
 	{
 		Debug.Log ("Note: " + indX + " - " + indY);
-		noteDataList[indX] = new NoteData(parseLineToNoteId(indY));
+		//noteDataList[indX] = new NoteData(parseLineToNoteId(indY));
 	}
 
 	private string parseLineToNoteId(int lineIndex)

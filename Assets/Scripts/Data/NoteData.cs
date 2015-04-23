@@ -3,10 +3,19 @@ using System.Collections;
 
 public class NoteData
 {
-	public string id;
+	public string pitch;
+	
+	public float duration;
+	public bool isRest;
 
-	public NoteData(string id)
+	public NoteData(string pitch, float duration)
 	{
-		this.id = id;
+		this.pitch = pitch;
+		this.duration = duration;
+	}
+
+	public int intDuration
+	{
+		get { return Mathf.FloorToInt(duration * 4); }
 	}
 }
