@@ -7,7 +7,7 @@ public class BarData
 	private const int numPulses = 4;
 	private const int numPositions = 16;
 
-	private EditorNoteData[] notes;
+	public EditorNoteData[] notes { get; private set; }
 
 	public BarData()
 	{
@@ -30,7 +30,7 @@ public class BarData
 
 		}
 
-		int noteEnd = position + editorNote.noteData.intDuration;
+		int noteEnd = editorNote.start + editorNote.noteData.intDuration;
 		int newNoteEnd = position + noteData.intDuration;
 
 		for (int i = position; i < newNoteEnd; i++)

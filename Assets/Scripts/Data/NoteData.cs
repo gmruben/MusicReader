@@ -6,7 +6,6 @@ public class NoteData
 	public string pitch;
 	
 	public float duration;
-	public bool isRest;
 
 	public NoteData(string pitch, float duration)
 	{
@@ -17,5 +16,10 @@ public class NoteData
 	public int intDuration
 	{
 		get { return Mathf.FloorToInt(duration * 4); }
+	}
+
+	public bool isRest
+	{
+		get { return pitch == "rest"; }
 	}
 }
