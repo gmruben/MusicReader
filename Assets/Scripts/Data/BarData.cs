@@ -38,7 +38,7 @@ public class BarData
 			notes[i] = newNote;
 		}
 
-		if (noteEnd > newNoteEnd)
+		if (!editorNote.noteData.isRest && noteEnd > newNoteEnd)
 		{
 			//Create new rest note
 			int duration = noteEnd - newNoteEnd;

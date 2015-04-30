@@ -2,6 +2,11 @@
 
 public static class CustomVector
 {
+	public static Vector3 setX (this Vector3 vector, float x)
+	{
+		return new Vector3(x, vector.y, vector.z);
+	}
+
 	public static Vector3 V3 (this Vector2 vector)
 	{
 		return new Vector3(vector.x, vector.y, 0.0f);

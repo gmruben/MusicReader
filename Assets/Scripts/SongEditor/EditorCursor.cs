@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public class EditorCursor : MonoBehaviour
@@ -18,9 +19,23 @@ public class EditorCursor : MonoBehaviour
 
 	void Update()
 	{
+		if (!EventSystem.current.IsPointerOverGameObject())
+		{
+			updateCursor();
+		}
+	}
+
+	public void changeSymbol(SymbolId symbolId)
+	{
+		noteDuration = SymbolData.retrieveDurationById(symbolId);
+		noteSprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/" + symbolId);
+	}
+
+	private void updateCursor()
+	{
 		Vector2 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition).XY();
 		transform.position = worldPosition.V3();
-
+		
 		bool hasFound = false;
 		Collider2D[] colliderList = Physics2D.OverlapPointAll(worldPosition);
 		for (int i = 0; i < colliderList.Length; i++)
@@ -30,11 +45,11 @@ public class EditorCursor : MonoBehaviour
 			{
 				hasFound = true;
 				currentBar.onEnter(this);
-
+				
 				break;
 			}
 		}
-
+		
 		if (!hasFound)
 		{
 			if (currentBar != null) currentBar.onExit();
@@ -43,11 +58,5 @@ public class EditorCursor : MonoBehaviour
 		{
 			if (Input.GetMouseButtonDown(0)) currentBar.onClick(this);
 		}
-	}
-
-	public void changeSymbol(SymbolId symbolId)
-	{
-		noteDuration = SymbolData.retrieveDurationById(symbolId);
-		noteSprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/" + symbolId);
 	}
 }

@@ -10,6 +10,8 @@ public class SymbolData
 	{
 		switch(symbolId)
 		{
+		case SymbolId.Semibreve:
+			return 4.0f;
 		case SymbolId.DottedMinim:
 			return 3.0f;
 		case SymbolId.Minim:
@@ -34,6 +36,7 @@ public class SymbolData
 
 public enum SymbolId
 {
+	Semibreve,
 	DottedMinim,
 	Minim,
 	DottedCrotchet,
