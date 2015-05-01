@@ -141,13 +141,12 @@ public class EditorMenu : UIMenu
 
 	private void onPlayButtonClick()
 	{
-
+		editor.play();
 	}
 
 	private void onStopButtonClick()
 	{
-
-
+		editor.pause();
 	}
 
 	private void onMoveLeftButtonClick()

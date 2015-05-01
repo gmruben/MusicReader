@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Bar : MonoBehaviour
 {
@@ -9,10 +10,12 @@ public class Bar : MonoBehaviour
 	public GameObject barUnitPrefab;
 	public GameObject notePrefab;
 
-	private BarUnit[] barUnitList;
+	public BarData barData { get; private set; }
 
-	private BarData barData;
+	private BarUnit[] barUnitList;
 	private BoxCollider2D collider;
+
+	private List<Note> noteList;
 
 	void Start()
 	{
@@ -23,6 +26,8 @@ public class Bar : MonoBehaviour
 	{
 		barData = new BarData();
 		collider = GetComponent<BoxCollider2D>();
+
+		noteList = new List<Note>();
 
 		barUnitList = new BarUnit[16];
 		for (int i = 0; i < 16; i++)
@@ -58,12 +63,16 @@ public class Bar : MonoBehaviour
 		int start = calculateStartIndex(cursor.cachedTransform.position);
 		float posx = offsetx + start * segmentWidth;
 
-		GameObject note = GameObject.Instantiate(notePrefab) as GameObject;
+		/*GameObject note = GameObject.Instantiate(notePrefab) as GameObject;
 
 		note.transform.parent = transform;
-		note.transform.localPosition = new Vector3(posx, 0, 0);
+		note.transform.localPosition = new Vector3(posx, 0, 0);*/
 
-		barData.addNote(new NoteData("b", cursor.noteDuration), start);
+		NoteData noteData = new NoteData("b", cursor.noteDuration);
+		//note.GetComponent<Note>().init(noteData);
+
+		barData.addNote(noteData, start);
+		drawNotes();
 	}
 
 	private void showDuration(int start, int duration)
@@ -96,5 +105,37 @@ public class Bar : MonoBehaviour
 		int startIndex = Mathf.FloorToInt((localPosition.x - segmentWidth) / segmentWidth);
 
 		return startIndex;
+	}
+
+	private void drawNotes()
+	{
+		for (int i = 0; i < noteList.Count; i++)
+		{
+			GameObject.Destroy(noteList[i].gameObject);
+		}
+		noteList.Clear();
+
+		int start = 0;
+
+		List<NoteData> noteDataList = barData.retrieveNoteDataList();
+		for (int i = 0; i < noteDataList.Count; i++)
+		{
+			float posx = offsetx + start * segmentWidth;
+
+			GameObject noteGameObject = GameObject.Instantiate(notePrefab) as GameObject;
+			
+			noteGameObject.transform.parent = transform;
+			noteGameObject.transform.localPosition = new Vector3(posx, 0, 0);
+
+			NoteData noteData = noteDataList[i];
+			Note note = noteGameObject.GetComponent<Note>();
+
+			Debug.Log("NOTE: " + noteData.intDuration + "(" + noteData.isRest + ")");
+			note.init(noteData);
+
+			noteList.Add(note);
+			start += noteData.intDuration;
+		}
+		Debug.Log("-----------------");
 	}
 }

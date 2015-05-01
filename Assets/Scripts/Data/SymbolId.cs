@@ -32,6 +32,31 @@ public class SymbolData
 
 		return 1.0f;
 	}
+
+	public static string retrieveIdByDuration(int duration, bool isRest)
+	{
+		switch(duration)
+		{
+		case 16:
+			return (isRest ? SymbolId.SemibreveRest : SymbolId.Semibreve).ToString();
+		case 12:
+			return SymbolId.DottedMinim.ToString();
+		case 8:
+			return (isRest ? SymbolId.MinimRest : SymbolId.Minim).ToString();
+		case 6: 
+			return SymbolId.DottedCrotchet.ToString();
+		case 4:
+			return (isRest ? SymbolId.CrotchetRest : SymbolId.Crotchet).ToString();
+		case 3:
+			return SymbolId.DottedQuaver.ToString();
+		case 2:
+			return (isRest ? SymbolId.QuaverRest : SymbolId.Quaver).ToString();
+		case 1:
+			return (isRest ? SymbolId.SemiquaverRest : SymbolId.Semiquaver).ToString();
+		}
+		
+		return SymbolId.Crotchet.ToString();
+	}
 }
 
 public enum SymbolId
@@ -44,5 +69,11 @@ public enum SymbolId
 	DottedQuaver,
 	Quaver,
 	DottedSemiquaver,
-	Semiquaver
+	Semiquaver,
+
+	SemibreveRest,
+	MinimRest,
+	CrotchetRest,
+	QuaverRest,
+	SemiquaverRest
 }

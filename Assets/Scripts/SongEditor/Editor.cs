@@ -10,15 +10,21 @@ public class Editor : MonoBehaviour
 
 	public GameObject barPrefab;
 
+	public MidiPlayer midiPlayer;
+
 	private List<Bar> barList;
 
 	private int currentIndex;
 	private Transform cachedTransform;
-	
+
+	private bool inPlay;
+
 	private bool inMove;
 	private float targetX;
 
 	private Tween tween;
+
+	private EditorPlayer editorPlayer;
 
 	void Start()
 	{
@@ -35,12 +41,24 @@ public class Editor : MonoBehaviour
 				cachedTransform.position = cachedTransform.position.setX(posx);
 			}
 		}
+
+		if (inPlay)
+		{
+			float posx = cachedTransform.position.x - (500 * Time.deltaTime);
+			cachedTransform.position = cachedTransform.position.setX(posx);
+
+			editorPlayer.update(Time.deltaTime);
+		}
 	}
 
 	public void init()
 	{
+		editorPlayer = new EditorPlayer(midiPlayer);
+
 		currentIndex = 0;
 		cachedTransform = transform;
+
+		inPlay = false;
 
 		inMove = false;
 		targetX = 0;
@@ -67,5 +85,29 @@ public class Editor : MonoBehaviour
 
 			tween = new Tween(cachedTransform.position.x, targetX, speed);
 		}
+	}
+
+	public void play()
+	{
+		inPlay = true;
+		cachedTransform.position = cachedTransform.position.setX(0);
+
+		editorPlayer.play(retrieveData());
+	}
+
+	public void pause()
+	{
+		inPlay = false;
+		cachedTransform.position = cachedTransform.position.setX(0);
+	}
+
+	private List<NoteData> retrieveData()
+	{
+		List<NoteData> noteDataList = new List<NoteData>();
+		foreach(Bar bar in barList)
+		{
+			noteDataList.AddRange(bar.barData.retrieveNoteDataList());
+		}
+		return noteDataList;
 	}
 }
