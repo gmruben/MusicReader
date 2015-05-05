@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ public class UserSongDataStore
 {
 	private static Dictionary<string, SongData> songDataList;
 
-	public static List<SongData> retrieveSongDataList()
+	public static void retrieveSongDataList()
 	{
-		List<SongData> songDataList = new List<SongData> ();
+		songDataList = new Dictionary<string, SongData>();
 		string path = Application.persistentDataPath + "/SongData";
 
 		DirectoryInfo directory = new DirectoryInfo(path);
@@ -17,22 +18,22 @@ public class UserSongDataStore
 
 		foreach (FileInfo file in fileInfo) 
 		{
-			using(FileStream fs = new FileStream(Application.persistentDataPath + "/gamesave.json", FileMode.Open))
+			using(FileStream fs = new FileStream(file.FullName, FileMode.Open))
 			{
 				BinaryReader fileReader = new BinaryReader(fs);
 				
-				SongData songData = SongData.parseJSonToSongData(fileReader.ReadString());
-				songDataList.Add(songData);
+				SongData songData = SongData.parseJsonToSongData(fileReader.ReadString());
+				songDataList.Add(songData.id, songData);
 
+				Debug.Log("ID: " + songData.id);
 				fs.Close();
 			}
 		}
-
-		return songDataList;
 	}
 
 	public static SongData retrieveSongData(string id)
 	{
+		Debug.Log("LOAD: " + id);
 		if (songDataList.ContainsKey (id))
 		{
 			return songDataList [id];
@@ -44,19 +45,24 @@ public class UserSongDataStore
 
 	public static void storeSongData(SongData songData)
 	{
-		string path = Application.persistentDataPath + "/SongData/" + songData.id + ".songData";
-		if (!File.Exists(path))
+		FileStream fs;
+
+		string dirpath = Application.persistentDataPath + "/SongData";
+		string filepath = dirpath + "/" + songData.id + ".songData";
+
+		if (!File.Exists(filepath))
 		{
-			if (!Directory.Exists(Application.persistentDataPath + "/SongData")) Directory.CreateDirectory(Application.persistentDataPath + "/SongData");
-			File.Create(path);
+			if (!Directory.Exists(dirpath)) Directory.CreateDirectory(dirpath);
+			fs = File.Create(filepath);
+		}
+		else
+		{
+			fs = new FileStream(filepath, FileMode.Create);
 		}
 
-		using(FileStream fs = new FileStream(Application.persistentDataPath + "/gamesave.json", FileMode.Create))
-		{
-			BinaryWriter fileWriter = new BinaryWriter(fs);
-			
-			fileWriter.Write(SongData.parseSongDataToJSon(songData));
-			fs.Close();
-		}
+		BinaryWriter fileWriter = new BinaryWriter(fs);
+		
+		fileWriter.Write(SongData.parseSongDataToJson(songData));
+		fs.Close();
 	}
 }

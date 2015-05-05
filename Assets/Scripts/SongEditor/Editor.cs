@@ -101,7 +101,7 @@ public class Editor : MonoBehaviour
 		cachedTransform.position = cachedTransform.position.setX(0);
 	}
 
-	private List<NoteData> retrieveData()
+	public List<NoteData> retrieveData()
 	{
 		List<NoteData> noteDataList = new List<NoteData>();
 		foreach(Bar bar in barList)
@@ -109,5 +109,13 @@ public class Editor : MonoBehaviour
 			noteDataList.AddRange(bar.barData.retrieveNoteDataList());
 		}
 		return noteDataList;
+	}
+
+	public void loadData(List<NoteData> noteList)
+	{
+		for (int i = 0; i < barList.Count; i++)
+		{
+			barList[i].drawNotes(noteList);
+		}
 	}
 }

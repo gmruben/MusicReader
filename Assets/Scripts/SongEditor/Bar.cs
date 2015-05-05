@@ -63,16 +63,10 @@ public class Bar : MonoBehaviour
 		int start = calculateStartIndex(cursor.cachedTransform.position);
 		float posx = offsetx + start * segmentWidth;
 
-		/*GameObject note = GameObject.Instantiate(notePrefab) as GameObject;
-
-		note.transform.parent = transform;
-		note.transform.localPosition = new Vector3(posx, 0, 0);*/
-
 		NoteData noteData = new NoteData("b", cursor.noteDuration);
-		//note.GetComponent<Note>().init(noteData);
 
 		barData.addNote(noteData, start);
-		drawNotes();
+		drawNotes(barData.retrieveNoteDataList());
 	}
 
 	private void showDuration(int start, int duration)
@@ -107,7 +101,7 @@ public class Bar : MonoBehaviour
 		return startIndex;
 	}
 
-	private void drawNotes()
+	public void drawNotes(List<NoteData> noteDataList)
 	{
 		for (int i = 0; i < noteList.Count; i++)
 		{
@@ -116,8 +110,6 @@ public class Bar : MonoBehaviour
 		noteList.Clear();
 
 		int start = 0;
-
-		List<NoteData> noteDataList = barData.retrieveNoteDataList();
 		for (int i = 0; i < noteDataList.Count; i++)
 		{
 			float posx = offsetx + start * segmentWidth;
@@ -130,12 +122,10 @@ public class Bar : MonoBehaviour
 			NoteData noteData = noteDataList[i];
 			Note note = noteGameObject.GetComponent<Note>();
 
-			Debug.Log("NOTE: " + noteData.intDuration + "(" + noteData.isRest + ")");
 			note.init(noteData);
 
 			noteList.Add(note);
 			start += noteData.intDuration;
 		}
-		Debug.Log("-----------------");
 	}
 }

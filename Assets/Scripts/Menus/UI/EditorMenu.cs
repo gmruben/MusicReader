@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EditorMenu : UIMenu
 {
@@ -40,8 +41,6 @@ public class EditorMenu : UIMenu
 
 	public EditorCursor cursor;
 	public Editor editor;
-	
-	private SongData songData;
 
 	private int tempoValue;
 
@@ -52,8 +51,6 @@ public class EditorMenu : UIMenu
 
 	public void init()
 	{
-		songData = new SongData();
-
 		tempoValue = 120;
 
 		saveSongData_Overlay.gameObject.SetActive (false);
@@ -118,17 +115,29 @@ public class EditorMenu : UIMenu
 
 	private void onSaveButtonClick()
 	{
-		saveSongData_Overlay.okButton.onClick += onSaveSongDataOkButtonClick;
+		/*saveSongData_Overlay.okButton.onClick += onSaveSongDataOkButtonClick;
 		saveSongData_Overlay.cancelButton.onClick += onSaveSongDataCancelButtonClick;
 
-		saveSongData_Overlay.gameObject.SetActive (true);
+		saveSongData_Overlay.gameObject.SetActive (true);*/
+
+		SongData songData = new SongData();
+
+		songData.id = "Song1";
+		songData.name = "Song 1";
+
+		songData.noteList = editor.retrieveData();
+
+		UserSongDataStore.storeSongData(songData);
 	}
 
 	private void onLoadButtonClick()
 	{
-		loadSongData_Overlay.cancelButton.onClick += onLoadSongDataCancelButtonClick;
+		/*loadSongData_Overlay.cancelButton.onClick += onLoadSongDataCancelButtonClick;
 		
-		loadSongData_Overlay.gameObject.SetActive (true);
+		loadSongData_Overlay.gameObject.SetActive (true);*/
+
+		UserSongDataStore.retrieveSongDataList();
+		editor.loadData(UserSongDataStore.retrieveSongData("Song1").noteList);
 	}
 
 	private void onChangeInstrumentButtonClick()
@@ -177,7 +186,7 @@ public class EditorMenu : UIMenu
 		saveSongData_Overlay.okButton.onClick -= onSaveSongDataOkButtonClick;
 		saveSongData_Overlay.cancelButton.onClick -= onSaveSongDataCancelButtonClick;
 
-		UserSongDataStore.storeSongData(songData);
+		//UserSongDataStore.storeSongData(songData);
 	}
 
 	private void onSaveSongDataCancelButtonClick()
