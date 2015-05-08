@@ -4,7 +4,9 @@ using System.Collections;
 
 public class EditorCursor : MonoBehaviour
 {
-	private SpriteRenderer noteSprite;
+	public Transform noteHandler;
+	public SpriteRenderer noteSprite;
+	public SpriteRenderer ledgerLineSprite;
 
 	public Transform cachedTransform { get; private set; }
 	public float noteDuration { get; private set; }
@@ -43,6 +45,8 @@ public class EditorCursor : MonoBehaviour
 			currentBar = colliderList[i].GetComponent<Bar>();
 			if (currentBar != null)
 			{
+				noteHandler.gameObject.SetActive(true);
+
 				hasFound = true;
 				currentBar.onEnter(this);
 				
@@ -52,6 +56,9 @@ public class EditorCursor : MonoBehaviour
 		
 		if (!hasFound)
 		{
+			noteHandler.localPosition = Vector3.zero;
+			noteHandler.gameObject.SetActive(false);
+
 			if (currentBar != null) currentBar.onExit();
 		}
 		else

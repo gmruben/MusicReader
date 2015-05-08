@@ -3,11 +3,11 @@ using System.Collections;
 
 public class NoteData
 {
-	public string pitch;
+	public NotePitch pitch;
 	
 	public float duration;
 
-	public NoteData(string pitch, float duration)
+	public NoteData(NotePitch pitch, float duration)
 	{
 		this.pitch = pitch;
 		this.duration = duration;
@@ -20,6 +20,6 @@ public class NoteData
 
 	public bool isRest
 	{
-		get { return pitch == "rest"; }
+		get { return pitch == NotePitch.Rest; }
 	}
 }

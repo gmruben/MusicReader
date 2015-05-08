@@ -25,7 +25,6 @@ public class UserSongDataStore
 				SongData songData = SongData.parseJsonToSongData(fileReader.ReadString());
 				songDataList.Add(songData.id, songData);
 
-				Debug.Log("ID: " + songData.id);
 				fs.Close();
 			}
 		}
@@ -33,7 +32,6 @@ public class UserSongDataStore
 
 	public static SongData retrieveSongData(string id)
 	{
-		Debug.Log("LOAD: " + id);
 		if (songDataList.ContainsKey (id))
 		{
 			return songDataList [id];

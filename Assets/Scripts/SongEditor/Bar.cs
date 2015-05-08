@@ -7,6 +7,10 @@ public class Bar : MonoBehaviour
 	private const int offsetx = 75;
 	private const int segmentWidth = 50;
 
+	private const float lineHeight = 9.5f;
+
+	private NotePitch centralNotePitch = NotePitch.B;
+
 	public GameObject barUnitPrefab;
 	public GameObject notePrefab;
 
@@ -51,6 +55,9 @@ public class Bar : MonoBehaviour
 		{
 			showDuration(start, duration);
 		}
+
+		float posy = calculateNoteIndex(cursor.transform.position) * lineHeight;
+		cursor.noteHandler.position = cursor.noteHandler.position.setY(posy);
 	}
 
 	public void onExit()
@@ -63,7 +70,11 @@ public class Bar : MonoBehaviour
 		int start = calculateStartIndex(cursor.cachedTransform.position);
 		float posx = offsetx + start * segmentWidth;
 
-		NoteData noteData = new NoteData("b", cursor.noteDuration);
+		int noteIndex = calculateNoteIndex(cursor.noteHandler.position);
+		NotePitch notePitch = centralNotePitch.Add(noteIndex);
+
+		Debug.Log(noteIndex + " - " + notePitch.StringValue);
+		NoteData noteData = new NoteData(notePitch, cursor.noteDuration);
 
 		barData.addNote(noteData, start);
 		drawNotes(barData.retrieveNoteDataList());
@@ -80,8 +91,8 @@ public class Bar : MonoBehaviour
 		{
 			barUnitList[i].gameObject.SetActive(true);
 
-			if (barData.notes[i].noteData.isRest) barUnitList[i].spriteRenderer.color = Color.blue;
-			else barUnitList[i].spriteRenderer.color = Color.red;
+			if (barData.notes[i].noteData.isRest) barUnitList[i].spriteRenderer.color = new Color(0.0f, 0.0f, 1.0f, 0.25f);
+			else barUnitList[i].spriteRenderer.color = new Color(1.0f, 0.0f, 0.0f, 0.25f);
 		}
 	}
 
@@ -113,11 +124,12 @@ public class Bar : MonoBehaviour
 		for (int i = 0; i < noteDataList.Count; i++)
 		{
 			float posx = offsetx + start * segmentWidth;
+			float posy = (noteDataList[i].pitch.IntValue - centralNotePitch.IntValue) * lineHeight;
 
 			GameObject noteGameObject = GameObject.Instantiate(notePrefab) as GameObject;
 			
 			noteGameObject.transform.parent = transform;
-			noteGameObject.transform.localPosition = new Vector3(posx, 0, 0);
+			noteGameObject.transform.localPosition = new Vector3(posx, posy, 0);
 
 			NoteData noteData = noteDataList[i];
 			Note note = noteGameObject.GetComponent<Note>();
@@ -127,5 +139,10 @@ public class Bar : MonoBehaviour
 			noteList.Add(note);
 			start += noteData.intDuration;
 		}
+	}
+
+	private int calculateNoteIndex(Vector3 position)
+	{
+		return Mathf.FloorToInt(position.y / lineHeight);
 	}
 }

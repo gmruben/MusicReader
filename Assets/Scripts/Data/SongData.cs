@@ -9,6 +9,7 @@ public class SongData
 	public string name;
 	
 	public List<NoteData> noteList;
+	public List<BarData2> barList;
 
 	public static SongData parseJsonToSongData(string json)
 	{
@@ -61,7 +62,7 @@ public class SongData
 		JsonObject jsonObject = new JsonObject();
 
 		jsonObject.Add("duration", noteData.duration);
-		jsonObject.Add("pitch", noteData.pitch);
+		jsonObject.Add("pitch", noteData.pitch.ToString());
 
 		return jsonObject;
 	}
@@ -69,7 +70,7 @@ public class SongData
 	private static NoteData jsonObjectToNoteData(JsonObject jsonObject)
 	{
 		float duration = float.Parse(jsonObject["duration"].ToString());
-		string pitch = jsonObject["pitch"].ToString();
+		NotePitch pitch = NotePitch.ParseString(jsonObject["pitch"].ToString());
 
 		NoteData noteData = new NoteData(pitch, duration);
 		return noteData;

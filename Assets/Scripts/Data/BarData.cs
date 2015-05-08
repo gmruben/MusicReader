@@ -13,7 +13,7 @@ public class BarData
 
 	public BarData()
 	{
-		EditorNoteData restNote = new EditorNoteData(0, new NoteData("rest", numPulses));
+		EditorNoteData restNote = new EditorNoteData(0, new NoteData(NotePitch.Rest, numPulses));
 
 		notes = new EditorNoteData[numPositions];
 		for (int i = 0; i < numPositions; i++)
@@ -54,7 +54,7 @@ public class BarData
 		{
 			//Create new rest note
 			float duration = (noteEnd - newNoteEnd) * barToNote;
-			EditorNoteData restNote = new EditorNoteData(newNoteEnd, new NoteData("rest", duration));
+			EditorNoteData restNote = new EditorNoteData(newNoteEnd, new NoteData(NotePitch.Rest, duration));
 			
 			for (int i = newNoteEnd; i < noteEnd; i++)
 			{
