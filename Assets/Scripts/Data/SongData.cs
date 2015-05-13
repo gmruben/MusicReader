@@ -61,18 +61,22 @@ public class SongData
 	{
 		JsonObject jsonObject = new JsonObject();
 
+		jsonObject.Add("start", noteData.start);
 		jsonObject.Add("duration", noteData.duration);
-		jsonObject.Add("pitch", noteData.pitch.ToString());
+		jsonObject.Add("pitch", noteData.pitch.StringValue);
 
 		return jsonObject;
 	}
 
 	private static NoteData jsonObjectToNoteData(JsonObject jsonObject)
 	{
-		float duration = float.Parse(jsonObject["duration"].ToString());
-		NotePitch pitch = NotePitch.ParseString(jsonObject["pitch"].ToString());
+		string pitchString  = jsonObject["pitch"].ToString().Replace ("\"", "");
 
-		NoteData noteData = new NoteData(pitch, duration);
+		int start = int.Parse(jsonObject["start"].ToString());
+		float duration = float.Parse(jsonObject["duration"].ToString());
+		NotePitch pitch = NotePitch.ParseString(pitchString);
+
+		NoteData noteData = new NoteData(pitch, start, duration);
 		return noteData;
 	}
 }

@@ -13,7 +13,7 @@ public class BarData
 
 	public BarData()
 	{
-		EditorNoteData restNote = new EditorNoteData(0, new NoteData(NotePitch.Rest, numPulses));
+		EditorNoteData restNote = new EditorNoteData(0, new NoteData(NotePitch.Rest, 0, numPulses));
 
 		notes = new EditorNoteData[numPositions];
 		for (int i = 0; i < numPositions; i++)
@@ -41,7 +41,7 @@ public class BarData
 		{
 			//Create the previous note
 			float prevDuration = (position - editorNote.start) * barToNote;
-			EditorNoteData prevNote = new EditorNoteData(editorNote.start, new NoteData(editorNote.noteData.pitch, prevDuration));
+			EditorNoteData prevNote = new EditorNoteData(editorNote.start, new NoteData(editorNote.noteData.pitch, editorNote.start, prevDuration));
 
 			int prevNoteEnd = prevNote.start + prevNote.noteData.intDuration;
 			for (int i = prevNote.start; i < prevNoteEnd; i++)
@@ -54,8 +54,10 @@ public class BarData
 		{
 			//Create new rest note
 			float duration = (noteEnd - newNoteEnd) * barToNote;
-			EditorNoteData restNote = new EditorNoteData(newNoteEnd, new NoteData(NotePitch.Rest, duration));
-			
+			//Calculate rest note list (there are not dotted rest notes, so we have to break those down into different notes)
+			//List<EditorNoteData> restNoteList = calculateRestNoteList(Mathf.FloorToInt(duration * 4), newNoteEnd);
+
+			EditorNoteData restNote = new EditorNoteData(newNoteEnd, new NoteData(NotePitch.Rest, newNoteEnd, duration));
 			for (int i = newNoteEnd; i < noteEnd; i++)
 			{
 				notes[i] = restNote;
@@ -80,6 +82,16 @@ public class BarData
 		while (index < numPositions && iterations < 20);
 
 		return noteDataList;
+	}
+
+	/// <summary>
+	/// Since there are not dotted rest notes, this function breaks a rest note into smaller correct rest notes.
+	/// </summary>
+	/// <returns>The rest note list.</returns>
+	private List<EditorNoteData> calculateRestNoteList(int duration, int start)
+	{
+		List<EditorNoteData> restNoteList = new List<EditorNoteData>();
+		return restNoteList;
 	}
 }
 

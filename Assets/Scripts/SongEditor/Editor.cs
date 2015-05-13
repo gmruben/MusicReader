@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Editor : MonoBehaviour
 {
-	private const int barSize = 900;
+	private const int barSize = 1200;
 	private const float speed = 2.5f;
 	private const int numBars = 10;
 

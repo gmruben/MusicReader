@@ -4,9 +4,7 @@ using System.Collections.Generic;
 
 public class Bar : MonoBehaviour
 {
-	private const int offsetx = 75;
-	private const int segmentWidth = 50;
-
+	private const float segmentWidth = 75.0f;
 	private const float lineHeight = 9.5f;
 
 	private NotePitch centralNotePitch = NotePitch.B;
@@ -39,7 +37,7 @@ public class Bar : MonoBehaviour
 			GameObject barUnitObject = GameObject.Instantiate(barUnitPrefab) as GameObject;
 
 			barUnitObject.transform.parent = transform;
-			barUnitObject.transform.localPosition = new Vector3(offsetx + i * segmentWidth, 0, 0);
+			barUnitObject.transform.localPosition = new Vector3((0.5f + i) * segmentWidth, 0, 0);
 
 			barUnitList[i] = barUnitObject.GetComponent<BarUnit>();
 			barUnitList[i].gameObject.SetActive(false);
@@ -68,13 +66,12 @@ public class Bar : MonoBehaviour
 	public void onClick(EditorCursor cursor)
 	{
 		int start = calculateStartIndex(cursor.cachedTransform.position);
-		float posx = offsetx + start * segmentWidth;
+		float posx = (0.5f + start) * segmentWidth;
 
 		int noteIndex = calculateNoteIndex(cursor.noteHandler.position);
 		NotePitch notePitch = centralNotePitch.Add(noteIndex);
 
-		Debug.Log(noteIndex + " - " + notePitch.StringValue);
-		NoteData noteData = new NoteData(notePitch, cursor.noteDuration);
+		NoteData noteData = new NoteData(notePitch, start, cursor.noteDuration);
 
 		barData.addNote(noteData, start);
 		drawNotes(barData.retrieveNoteDataList());
@@ -107,7 +104,7 @@ public class Bar : MonoBehaviour
 	private int calculateStartIndex(Vector3 position)
 	{
 		Vector3 localPosition = transform.InverseTransformPoint(position);
-		int startIndex = Mathf.FloorToInt((localPosition.x - segmentWidth) / segmentWidth);
+		int startIndex = Mathf.FloorToInt((localPosition.x - 0) / segmentWidth);
 
 		return startIndex;
 	}
@@ -123,8 +120,8 @@ public class Bar : MonoBehaviour
 		int start = 0;
 		for (int i = 0; i < noteDataList.Count; i++)
 		{
-			float posx = offsetx + start * segmentWidth;
-			float posy = (noteDataList[i].pitch.IntValue - centralNotePitch.IntValue) * lineHeight;
+			float posx = (0.5f + start) * segmentWidth;
+			float posy = noteDataList[i].isRest ? 0.0f : (noteDataList[i].pitch.IntValue - centralNotePitch.IntValue) * lineHeight;
 
 			GameObject noteGameObject = GameObject.Instantiate(notePrefab) as GameObject;
 			

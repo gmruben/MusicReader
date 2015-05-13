@@ -4,12 +4,14 @@ using System.Collections;
 public class NoteData
 {
 	public NotePitch pitch;
-	
+
+	public int start;
 	public float duration;
 
-	public NoteData(NotePitch pitch, float duration)
+	public NoteData(NotePitch pitch, int start, float duration)
 	{
 		this.pitch = pitch;
+		this.start = start;
 		this.duration = duration;
 	}
 

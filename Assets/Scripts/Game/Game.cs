@@ -4,21 +4,16 @@ using System.Collections;
 public class Game : MonoBehaviour
 {
 	public GameHUD gameHUD;
+	public GameBar gameBar;
 
 	private int score;
 	private int multiplier;
 
+	private Note currentNote;
+
 	void Start()
 	{
 		init ();
-	}
-
-	void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.A))
-		{
-
-		}
 	}
 
 	private void init()
@@ -27,5 +22,12 @@ public class Game : MonoBehaviour
 		multiplier = 1;
 
 		gameHUD.init();
+
+		//Load song data
+		UserSongDataStore.retrieveSongDataList();
+		SongData songData = UserSongDataStore.retrieveSongData("Song1");
+
+		gameBar.init(songData);
+
 	}
 }
