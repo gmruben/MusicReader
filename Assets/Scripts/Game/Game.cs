@@ -8,6 +8,7 @@ public class Game : MonoBehaviour
 
 	private int score;
 	private int multiplier;
+	private int multiplierCount;
 
 	private Note currentNote;
 
@@ -20,6 +21,7 @@ public class Game : MonoBehaviour
 	{
 		score = 0;
 		multiplier = 1;
+		multiplierCount = 0;
 
 		gameHUD.init();
 
@@ -29,5 +31,32 @@ public class Game : MonoBehaviour
 
 		gameBar.init(songData);
 
+		gameBar.onHitNote += onHitNote;
+		gameBar.onMissNote += onMissNote;
+	}
+
+	private void onHitNote()
+	{
+		score += GameParameters.noteScore * multiplier;
+		multiplierCount += 1;
+
+		if (multiplierCount == GameParameters.multiplierUpValue)
+		{
+			multiplierCount = 0;
+			multiplier += 1;
+		}
+
+		gameHUD.updateScore(score);
+		gameHUD.updateMultiplier(multiplier);
+		gameHUD.updateMultiplierCount(multiplierCount);
+	}
+
+	private void onMissNote()
+	{
+		multiplierCount = 0;
+		multiplier = 1;
+
+		gameHUD.updateMultiplier(multiplier);
+		gameHUD.updateMultiplierCount(multiplierCount);
 	}
 }

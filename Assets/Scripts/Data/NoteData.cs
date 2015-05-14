@@ -24,4 +24,9 @@ public class NoteData
 	{
 		get { return pitch == NotePitch.Rest; }
 	}
+
+	public bool isHold
+	{
+		get { return intDuration > 1; }
+	}
 }

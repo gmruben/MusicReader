@@ -3,24 +3,39 @@ using System.Collections;
 
 public class HoldNote : MonoBehaviour
 {
-	private const int size = 100;
+	private const float size = 150.0f;
+	private const float spriteSize = 1.5f;
 
-	public Transform spriteStart;
-	public Transform spriteMiddle;
-	public Transform spriteEnd;
+	public Transform center;
+	public Transform end;
 
-	void Start()
+	public GameObject consumeAnimation;
+
+	private float holdDuration;
+
+	public void init(int duration)
 	{
-		init (5);
+		holdDuration = duration - 1;
+
+		center.localScale = center.localScale.setX(holdDuration * spriteSize);
+		end.localPosition = end.localPosition.setX(holdDuration * size);
+
+		consumeAnimation.SetActive(false);
 	}
 
-	public void init(float time)
+	public void hit()
 	{
-		spriteStart.localPosition = new Vector3(0, spriteStart.localPosition.y, spriteStart.localPosition.z);
-		spriteEnd.localPosition = new Vector3(size * (time + 1), spriteStart.localPosition.y, spriteStart.localPosition.z);
+		consumeAnimation.SetActive(true);
+	}
 
-		spriteMiddle.localScale = new Vector3(time, 1.0f, 1.0f);
-		spriteMiddle.localPosition = new Vector3(((time + 1) / 2) * size, spriteStart.localPosition.y, spriteStart.localPosition.z);
+	public void update(float consumeDuration)
+	{
+		//Calculate the duration left on the note
+		float remain = holdDuration - consumeDuration;
 
+		center.localScale = center.localScale.setX(remain * spriteSize);
+
+		center.localPosition = center.localPosition.setX(consumeDuration * size);
+		consumeAnimation.transform.localPosition = consumeAnimation.transform.localPosition.setX(consumeDuration * size);
 	}
 }
