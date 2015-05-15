@@ -12,7 +12,7 @@ public class GameBar : MonoBehaviour
 	public event Action onHitNote;
 	public event Action onMissNote;
 
-	private NotePitch centralNotePitch = NotePitch.B;
+	private NotePitch centralNotePitch = NotePitch.B4;
 
 	private float speed;
 	private Transform cachedTransform;

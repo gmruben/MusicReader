@@ -7,10 +7,13 @@ public class Bar : MonoBehaviour
 	private const float segmentWidth = 75.0f;
 	private const float lineHeight = 9.5f;
 
-	private NotePitch centralNotePitch = NotePitch.B;
+	private NotePitch centralNotePitch = NotePitch.B4;
 
 	public GameObject barUnitPrefab;
 	public GameObject notePrefab;
+
+	public GameObject topLedgerLines;
+	public GameObject bottomLedgerLines;
 
 	public BarData barData { get; private set; }
 
@@ -26,6 +29,9 @@ public class Bar : MonoBehaviour
 
 	public void init()
 	{
+		topLedgerLines.SetActive(false);
+		bottomLedgerLines.SetActive(false);
+
 		barData = new BarData();
 		collider = GetComponent<BoxCollider2D>();
 
@@ -54,8 +60,17 @@ public class Bar : MonoBehaviour
 			showDuration(start, duration);
 		}
 
-		float posy = calculateNoteIndex(cursor.transform.position) * lineHeight;
-		cursor.noteHandler.position = cursor.noteHandler.position.setY(posy);
+		int noteIndex = calculateNoteIndex(cursor.transform.position);
+		NotePitch notePitch = centralNotePitch.Add(noteIndex);
+
+		//Check whether we need to show ledger lines or not
+		topLedgerLines.SetActive(notePitch.IntValue >= NotePitch.A5.IntValue);
+		bottomLedgerLines.SetActive(notePitch.IntValue <= NotePitch.C3.IntValue);
+
+		topLedgerLines.transform.position = topLedgerLines.transform.position.setX(cursor.transform.position.x);
+		bottomLedgerLines.transform.position = bottomLedgerLines.transform.position.setX(cursor.transform.position.x);
+
+		cursor.noteHandler.position = cursor.noteHandler.position.setY(noteIndex * lineHeight);
 	}
 
 	public void onExit()

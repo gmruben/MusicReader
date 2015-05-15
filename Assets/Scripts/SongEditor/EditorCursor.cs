@@ -6,7 +6,6 @@ public class EditorCursor : MonoBehaviour
 {
 	public Transform noteHandler;
 	public SpriteRenderer noteSprite;
-	public SpriteRenderer ledgerLineSprite;
 
 	public Transform cachedTransform { get; private set; }
 	public float noteDuration { get; private set; }
