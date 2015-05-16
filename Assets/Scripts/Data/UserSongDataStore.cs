@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class UserSongDataStore
 {
-	private static Dictionary<string, SongData> songDataList;
+	public static Dictionary<string, SongData> songDataList;
 
 	public static void retrieveSongDataList()
 	{

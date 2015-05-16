@@ -6,18 +6,13 @@ public class NoteData
 	public NotePitch pitch;
 
 	public int start;
-	public float duration;
+	public int duration;
 
-	public NoteData(NotePitch pitch, int start, float duration)
+	public NoteData(NotePitch pitch, int start, int duration)
 	{
 		this.pitch = pitch;
 		this.start = start;
 		this.duration = duration;
-	}
-
-	public int intDuration
-	{
-		get { return Mathf.FloorToInt(duration * 4); }
 	}
 
 	public bool isRest
@@ -27,6 +22,6 @@ public class NoteData
 
 	public bool isHold
 	{
-		get { return intDuration > 1; }
+		get { return duration > 1; }
 	}
 }

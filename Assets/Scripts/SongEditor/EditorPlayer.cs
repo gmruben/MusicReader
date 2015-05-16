@@ -45,7 +45,7 @@ public class EditorPlayer
 			currentNoteData = noteDataList[0];
 			noteDataList.RemoveAt(0);
 
-			Debug.Log("PLAY NOTE: " + currentNoteData.intDuration);
+			Debug.Log("PLAY NOTE: " + currentNoteData.duration);
 
 			midiPlayer.noteOff();
 			if (!currentNoteData.isRest)

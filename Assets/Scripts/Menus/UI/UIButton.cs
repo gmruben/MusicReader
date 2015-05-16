@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Collections;
 
@@ -6,7 +7,7 @@ public class UIButton : MonoBehaviour
 {
 	public event Action onClick;
 	
-	private TextMesh _text;
+	private Text _text;
 	
 	private Color normalTextColor = Color.white;
 	private Color highlightedTextColor = ColorPalette.menuHighlight;
@@ -56,13 +57,13 @@ public class UIButton : MonoBehaviour
 		}
 	}
 	
-	private TextMesh text
+	private Text text
 	{
 		get
 		{
 			if (_text == null && hasText) 
 			{
-				_text = GetComponentInChildren<TextMesh>();
+				_text = GetComponentInChildren<Text>();
 				if (_text == null) hasText = false;
 			}
 			
@@ -73,7 +74,7 @@ public class UIButton : MonoBehaviour
 		{
 			if (_text == null && hasText)
 			{
-				_text = GetComponentInChildren<TextMesh>();
+				_text = GetComponentInChildren<Text>();
 				if (_text == null) hasText = false;
 			}
 			

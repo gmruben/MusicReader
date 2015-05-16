@@ -23,7 +23,7 @@ public class Game : MonoBehaviour
 		multiplier = 1;
 		multiplierCount = 0;
 
-		gameHUD.init();
+		gameHUD.Init();
 
 		//Load song data
 		UserSongDataStore.retrieveSongDataList();

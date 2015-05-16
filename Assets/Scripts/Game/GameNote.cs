@@ -34,7 +34,7 @@ public class GameNote : MonoBehaviour
 		if (noteData.isHold)
 		{
 			holdNote.gameObject.SetActive(true);
-			holdNote.init(noteData.intDuration);
+			holdNote.init(noteData.duration);
 		}
 		else
 		{
@@ -59,10 +59,10 @@ public class GameNote : MonoBehaviour
 
 	public void UpdateHold(float duration)
 	{
-		if (noteData.intDuration > 1)
+		if (noteData.duration > 1)
 		{
 			//HACK:Unify this -1 thing for hold notes (and the intDuration thing)
-			if (duration < noteData.intDuration - 1)
+			if (duration < noteData.duration - 1)
 			{
 				holdNote.update(duration);
 			}

@@ -9,5 +9,5 @@ public class EntityManager : Singleton<EntityManager>
 	public GameObject notePrefab;
 	public GameObject gameNotePrefab;
 
-	public override void init() { }
+	public override void Init() { }
 }

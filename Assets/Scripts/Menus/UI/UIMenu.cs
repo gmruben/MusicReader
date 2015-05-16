@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class UIMenu : MonoBehaviour
+public abstract class UIMenu : MonoBehaviour
 {
 	protected RectTransform rectTransform;
 	
@@ -12,7 +12,7 @@ public class UIMenu : MonoBehaviour
 		rectTransform = GetComponent<RectTransform>();
 		rectTransform.localScale = Vector3.one * ScreenDimension.screenSize;
 	}
-	
+
 	public virtual void setActive(bool isActive)
 	{
 		gameObject.SetActive(isActive);

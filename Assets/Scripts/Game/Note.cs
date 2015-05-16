@@ -8,7 +8,7 @@ public class Note : MonoBehaviour
 
 	public void init(NoteData noteData)
 	{
-		string symbolId = SymbolData.retrieveIdByDuration(noteData.intDuration, noteData.isRest);
+		string symbolId = NoteUtil.retrieveIdByDuration(noteData.duration, noteData.isRest);
 
 		this.noteData = noteData;
 		sprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/" + symbolId);

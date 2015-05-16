@@ -9,7 +9,7 @@ public class GameHUD : UIMenu
 
 	public MultiplierOrb[] multiplierOrbList;
 
-	public void init()
+	public void Init()
 	{
 		updateScore(0);
 		updateMultiplier(1);

@@ -17,6 +17,21 @@ public static class CustomVector
 		return new Vector3(vector.x, vector.y, z);
 	}
 
+	public static Vector3 AddX (this Vector3 vector, float x)
+	{
+		return new Vector3(vector.x + x, vector.y, vector.z);
+	}
+	
+	public static Vector3 AddY (this Vector3 vector, float y)
+	{
+		return new Vector3(vector.x, vector.y + y, vector.z);
+	}
+	
+	public static Vector3 AddZ (this Vector3 vector, float z)
+	{
+		return new Vector3(vector.x, vector.y, vector.z + z);
+	}
+
 	public static Vector3 V3 (this Vector2 vector)
 	{
 		return new Vector3(vector.x, vector.y, 0.0f);

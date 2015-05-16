@@ -4,63 +4,92 @@ using System.Collections.Generic;
 
 public class BarData
 {
-	private const float barToNote = 0.25f;
-
 	private const int numPulses = 4;
 	private const int numPositions = 16;
 
-	public EditorNoteData[] notes { get; private set; }
+	public NoteData[] notes { get; private set; }
 
 	public BarData()
 	{
-		EditorNoteData restNote = new EditorNoteData(0, new NoteData(NotePitch.Rest, 0, numPulses));
+		NoteData restNote = new NoteData(NotePitch.Rest, 0, numPulses);
 
-		notes = new EditorNoteData[numPositions];
+		notes = new NoteData[numPositions];
 		for (int i = 0; i < numPositions; i++)
 		{
 			notes[i] = restNote;
 		}
 	}
 
-	public void addNote(NoteData noteData, int position)
+	public void addNote(NoteData newNoteData, int position)
 	{
-		EditorNoteData editorNote = notes[position];
-		EditorNoteData newNote = new EditorNoteData(position, noteData);
+		NoteData prevNote = notes[position];
 
-		int noteEnd = editorNote.start + editorNote.noteData.intDuration;
-		int newNoteEnd = position + noteData.intDuration;
+		int prevNoteEnd = prevNote.start + prevNote.duration - 1;
+		int newNoteEnd = position + newNoteData.duration - 1;
 
 		//Add the new note
-		for (int i = position; i < newNoteEnd; i++)
+		for (int i = position; i <= newNoteEnd; i++)
 		{
-			notes[i] = newNote;
+			notes[i] = newNoteData;
 		}
 
-		//If the new note starts at the same position where the old note starts
-		if (position > editorNote.start)
+		//If the new note overlaps with the previous note
+		if (position >= prevNote.start && position <= prevNoteEnd)
 		{
 			//Create the previous note
-			float prevDuration = (position - editorNote.start) * barToNote;
-			EditorNoteData prevNote = new EditorNoteData(editorNote.start, new NoteData(editorNote.noteData.pitch, editorNote.start, prevDuration));
+			int duration = (position - prevNote.start);
+			NoteData note = new NoteData(prevNote.pitch, prevNote.start, duration);
 
-			int prevNoteEnd = prevNote.start + prevNote.noteData.intDuration;
-			for (int i = prevNote.start; i < prevNoteEnd; i++)
+			int noteEnd = note.start + note.duration - 1;
+			for (int i = note.start; i <= noteEnd; i++)
 			{
-				notes[i] = prevNote;
+				notes[i] = note;
 			}
 		}
 
-		if (noteEnd > newNoteEnd)
+		//If the previous note finishes after the new note, create a rest for the remaining positions
+		if (prevNoteEnd > newNoteEnd)
 		{
 			//Create new rest note
-			float duration = (noteEnd - newNoteEnd) * barToNote;
-			//Calculate rest note list (there are not dotted rest notes, so we have to break those down into different notes)
-			//List<EditorNoteData> restNoteList = calculateRestNoteList(Mathf.FloorToInt(duration * 4), newNoteEnd);
+			int restDuration = (prevNoteEnd - newNoteEnd);
+			NoteData restEditorNote = new NoteData(NotePitch.Rest, newNoteEnd, restDuration);
 
-			EditorNoteData restNote = new EditorNoteData(newNoteEnd, new NoteData(NotePitch.Rest, newNoteEnd, duration));
-			for (int i = newNoteEnd; i < noteEnd; i++)
+			for (int i = newNoteEnd; i <= prevNoteEnd; i++)
 			{
-				notes[i] = restNote;
+				notes[i] = restEditorNote;
+			}
+		}
+
+		//Merge the rest notes
+		mergeRestNotes();
+	}
+
+	/// <summary>
+	/// Merges all the contiguous rest notes
+	/// </summary>
+	private void mergeRestNotes()
+	{
+		NoteData editorLastNote = notes[0];
+		for (int i = 0; i < numPositions; i++)
+		{
+			NoteData editorCurrentNote = notes[i];
+			if (editorLastNote != editorCurrentNote)
+			{
+				//If they are both rest, merge them
+				if (editorLastNote.isRest && editorCurrentNote.isRest)
+				{
+					int start = editorLastNote.start;
+					int duration = editorLastNote.duration + editorCurrentNote.duration;
+					int end = start + duration - 1;
+
+					NoteData newNote = new NoteData(NotePitch.Rest, start, duration);
+					for (int j = start; j <= end ; j++)
+					{
+						notes[j] = newNote;
+					}
+					editorCurrentNote = newNote;
+				}
+				editorLastNote = editorCurrentNote;
 			}
 		}
 	}
@@ -73,29 +102,19 @@ public class BarData
 		int iterations = 0;
 		do
 		{
-			EditorNoteData editorNoteData = notes[index];
-			noteDataList.Add(editorNoteData.noteData);
+			NoteData editorNoteData = notes[index];
+			noteDataList.Add(editorNoteData);
 
-			index += editorNoteData.noteData.intDuration;
+			index += editorNoteData.duration;
 			iterations++;
 		}
 		while (index < numPositions && iterations < 20);
 
 		return noteDataList;
 	}
-
-	/// <summary>
-	/// Since there are not dotted rest notes, this function breaks a rest note into smaller correct rest notes.
-	/// </summary>
-	/// <returns>The rest note list.</returns>
-	private List<EditorNoteData> calculateRestNoteList(int duration, int start)
-	{
-		List<EditorNoteData> restNoteList = new List<EditorNoteData>();
-		return restNoteList;
-	}
 }
 
-public class EditorNoteData
+/*public class EditorNoteData
 {
 	public int start;
 	public NoteData noteData;
@@ -105,4 +124,4 @@ public class EditorNoteData
 		this.start = start;
 		this.noteData = noteData;
 	}
-}
+}*/

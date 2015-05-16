@@ -53,11 +53,9 @@ public class Bar : MonoBehaviour
 	public void onEnter(EditorCursor cursor)
 	{
 		int start = calculateStartIndex(cursor.cachedTransform.position);
-		int duration = Mathf.FloorToInt(cursor.noteDuration * 4);
-
 		if (start >= 0 && start <= 15)
 		{
-			showDuration(start, duration);
+			showDuration(start, cursor.currentNoteData.duration);
 		}
 
 		int noteIndex = calculateNoteIndex(cursor.transform.position);
@@ -84,9 +82,9 @@ public class Bar : MonoBehaviour
 		float posx = (0.5f + start) * segmentWidth;
 
 		int noteIndex = calculateNoteIndex(cursor.noteHandler.position);
-		NotePitch notePitch = centralNotePitch.Add(noteIndex);
+		NotePitch notePitch = cursor.currentNoteData.isRest ? NotePitch.Rest : centralNotePitch.Add(noteIndex);
 
-		NoteData noteData = new NoteData(notePitch, start, cursor.noteDuration);
+		NoteData noteData = new NoteData(notePitch, start, cursor.currentNoteData.duration);
 
 		barData.addNote(noteData, start);
 		drawNotes(barData.retrieveNoteDataList());
@@ -103,7 +101,7 @@ public class Bar : MonoBehaviour
 		{
 			barUnitList[i].gameObject.SetActive(true);
 
-			if (barData.notes[i].noteData.isRest) barUnitList[i].spriteRenderer.color = new Color(0.0f, 0.0f, 1.0f, 0.25f);
+			if (barData.notes[i].isRest) barUnitList[i].spriteRenderer.color = new Color(0.0f, 0.0f, 1.0f, 0.25f);
 			else barUnitList[i].spriteRenderer.color = new Color(1.0f, 0.0f, 0.0f, 0.25f);
 		}
 	}
@@ -149,7 +147,7 @@ public class Bar : MonoBehaviour
 			note.init(noteData);
 
 			noteList.Add(note);
-			start += noteData.intDuration;
+			start += noteData.duration;
 		}
 	}
 

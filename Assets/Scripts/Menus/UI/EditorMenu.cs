@@ -14,6 +14,8 @@ public class EditorMenu : UIMenu
 
 	public UIButton saveButton;
 	public UIButton loadButton;
+	public UIButton backButton;
+
 	public UIButton changeInstrumentButton;
 
 	public InputField tempoInput;
@@ -30,7 +32,6 @@ public class EditorMenu : UIMenu
 	public SymbolButton crotchetButton;
 	public SymbolButton dottedQuaverButton;
 	public SymbolButton quaverButton;
-	public SymbolButton dottedSemiquaverButton;
 	public SymbolButton semiquaverButton;
 
 	public SymbolButton semibreveRestButton;
@@ -46,10 +47,10 @@ public class EditorMenu : UIMenu
 
 	void Start()
 	{
-		init ();
+		Init ();
 	}
 
-	public void init()
+	public void Init()
 	{
 		tempoValue = 120;
 
@@ -58,6 +59,7 @@ public class EditorMenu : UIMenu
 
 		saveButton.onClick += onSaveButtonClick;
 		loadButton.onClick += onLoadButtonClick;
+		backButton.onClick += onBackButtonClick;
 
 		changeInstrumentButton.onClick += onChangeInstrumentButtonClick;
 
@@ -77,20 +79,19 @@ public class EditorMenu : UIMenu
 
 	private void createSymbolButtons()
 	{
-		dottedMinimButton.setData(SymbolId.DottedMinim);
-		minimButton.setData(SymbolId.Minim);
-		dottedCrotchetButton.setData(SymbolId.DottedCrotchet);
-		crotchetButton.setData(SymbolId.Crotchet);
-		dottedQuaverButton.setData(SymbolId.DottedQuaver);
-		quaverButton.setData(SymbolId.Quaver);
-		dottedSemiquaverButton.setData(SymbolId.DottedSemiquaver);
-		semiquaverButton.setData(SymbolId.Semiquaver);
+		dottedMinimButton.setData(new CursorNoteData(NoteId.DottedMinim, false));
+		minimButton.setData(new CursorNoteData(NoteId.Minim, false));
+		dottedCrotchetButton.setData(new CursorNoteData(NoteId.DottedCrotchet, false));
+		crotchetButton.setData(new CursorNoteData(NoteId.Crotchet, false));
+		dottedQuaverButton.setData(new CursorNoteData(NoteId.DottedQuaver, false));
+		quaverButton.setData(new CursorNoteData(NoteId.Quaver, false));
+		semiquaverButton.setData(new CursorNoteData(NoteId.Semiquaver, false));
 
-		semibreveRestButton.setData(SymbolId.Semibreve);
-		minimRestButton.setData(SymbolId.Minim);
-		crotchetRestButton.setData(SymbolId.Crotchet);
-		quaverRestButton.setData(SymbolId.Quaver);
-		semiquaverRestButton.setData(SymbolId.Semiquaver);
+		semibreveRestButton.setData(new CursorNoteData(NoteId.SemibreveRest, true));
+		minimRestButton.setData(new CursorNoteData(NoteId.MinimRest, true));
+		crotchetRestButton.setData(new CursorNoteData(NoteId.CrotchetRest, true));
+		quaverRestButton.setData(new CursorNoteData(NoteId.QuaverRest, true));
+		semiquaverRestButton.setData(new CursorNoteData(NoteId.SemiquaverRest, true));
 
 		dottedMinimButton.onClick += onSymbolButtonClick;
 		minimButton.onClick += onSymbolButtonClick;
@@ -98,7 +99,6 @@ public class EditorMenu : UIMenu
 		crotchetButton.onClick += onSymbolButtonClick;
 		dottedQuaverButton.onClick += onSymbolButtonClick;
 		quaverButton.onClick += onSymbolButtonClick;
-		dottedSemiquaverButton.onClick += onSymbolButtonClick;
 		semiquaverButton.onClick += onSymbolButtonClick;
 
 		semibreveRestButton.onClick += onSymbolButtonClick;
@@ -108,9 +108,9 @@ public class EditorMenu : UIMenu
 		semiquaverRestButton.onClick += onSymbolButtonClick;
 	}
 
-	private void onSymbolButtonClick(SymbolId symbolId)
+	private void onSymbolButtonClick(CursorNoteData cursorNoteData)
 	{
-		cursor.changeSymbol(symbolId);
+		cursor.updateNoteData(cursorNoteData);
 	}
 
 	private void onSaveButtonClick()
@@ -156,6 +156,11 @@ public class EditorMenu : UIMenu
 	private void onStopButtonClick()
 	{
 		editor.pause();
+	}
+
+	private void onBackButtonClick()
+	{
+		Application.LoadLevel("Menu");
 	}
 
 	private void onMoveLeftButtonClick()

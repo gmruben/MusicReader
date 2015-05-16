@@ -42,5 +42,5 @@ public class SpriteManager : Singleton<SpriteManager>
 		else return buttonYHoldEndSprite;
 	}
 
-	public override void init() { }
+	public override void Init() { }
 }

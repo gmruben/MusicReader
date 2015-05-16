@@ -8,9 +8,9 @@ public class EditorCursor : MonoBehaviour
 	public SpriteRenderer noteSprite;
 
 	public Transform cachedTransform { get; private set; }
-	public float noteDuration { get; private set; }
 
 	private Bar currentBar;
+	public CursorNoteData currentNoteData { get; private set; }
 
 	void Start()
 	{
@@ -26,10 +26,12 @@ public class EditorCursor : MonoBehaviour
 		}
 	}
 
-	public void changeSymbol(SymbolId symbolId)
+	public void updateNoteData(CursorNoteData noteData)
 	{
-		noteDuration = SymbolData.retrieveDurationById(symbolId);
-		noteSprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/" + symbolId);
+		currentNoteData = noteData;
+
+		Debug.Log("NOTE ID: " + noteData.noteId);
+		noteSprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/" + noteData.noteId);
 	}
 
 	private void updateCursor()
@@ -64,5 +66,25 @@ public class EditorCursor : MonoBehaviour
 		{
 			if (Input.GetMouseButtonDown(0)) currentBar.onClick(this);
 		}
+	}
+}
+
+/// <summary>
+/// Data for the cursor's current note
+/// </summary>
+public struct CursorNoteData
+{
+	public bool isRest;
+	public NoteId noteId;
+
+	public CursorNoteData(NoteId noteId, bool isRest)
+	{
+		this.isRest = isRest;
+		this.noteId = noteId;
+	}
+
+	public int duration
+	{
+		get { return NoteUtil.retrieveDurationById(noteId); }
 	}
 }
