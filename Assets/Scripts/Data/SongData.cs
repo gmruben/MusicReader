@@ -66,7 +66,9 @@ public class SongData
 	private static JsonObject trackDataToJsonObject(TrackData trackData)
 	{
 		JsonObject jsonObject = new JsonObject();
-		
+
+		jsonObject.Add("id", trackData.id);
+		jsonObject.Add("name", trackData.name);
 		jsonObject.Add("instrumentId", trackData.instrumentId.ToString());
 		
 		return jsonObject;
@@ -74,9 +76,11 @@ public class SongData
 
 	private static TrackData jsonObjectToTrackData(JsonObject jsonObject)
 	{	
+		string id = jsonValueToString(jsonObject["id"].ToString());
+		string name = jsonValueToString(jsonObject["name"].ToString());
 		InstrumentId instrumentId = (InstrumentId) System.Enum.Parse(typeof(InstrumentId), jsonValueToString(jsonObject["instrumentId"].ToString()));
-		
-		TrackData trackData = new TrackData(instrumentId);
+
+		TrackData trackData = new TrackData(id, name, instrumentId);
 		return trackData;
 	}
 

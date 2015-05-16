@@ -6,39 +6,74 @@ using System.Collections.Generic;
 public class EditSongMenu : UIMenu
 {
 	public Text title;
-	public EditorInstrumentList instrumentList;
+	public EditorTrackList trackList;
 
-	public UIButton newInstrumentButton;
+	public UIButton newTrackButton;
 	public UIButton backButton;
 
 	private SongData songData;
 	private bool comeFromEditorMenu;
+
+	private CreateNewTrackOverlay createNewTrackOverlay;
 
 	public void Init(SongData songData, bool comeFromEditorMenu)
 	{
 		this.songData = songData;
 		this.comeFromEditorMenu = comeFromEditorMenu;
 
-		title.text = "EDITOR - EDIT SONG (" + songData.name + ")";
+		title.text = "EDIT SONG (" + songData.name + ")";
 
-		instrumentList.Init(songData);
-		instrumentList.onInstrumentClick += OnInstrumentClick;
+		trackList.Init(songData);
 
-		newInstrumentButton.onClick += OnNewInstrumentButtonClick;
+		newTrackButton.onClick += OnNewTrackButtonClick;
 		backButton.onClick += OnBackButtonClick;
 	}
 
-	private void OnInstrumentClick(string intrumentId)
+	public override void setEnabled(bool isEnabled)
 	{
-		Application.LoadLevel("Editor");
+		newTrackButton.gameObject.SetActive(isEnabled);
+		backButton.gameObject.SetActive(isEnabled);
+
+		trackList.gameObject.SetActive(isEnabled);
 	}
 
-	private void OnNewInstrumentButtonClick()
+	private void OnNewTrackButtonClick()
 	{
-		songData.trackList.Add(new TrackData(InstrumentId.Guitar));
+		setEnabled(false);
+
+		createNewTrackOverlay = MenuManager.instance.instantiateCreateNewTrackOverlay();
+		createNewTrackOverlay.Init();
+
+		createNewTrackOverlay.OnCreate += OnCreateNewTrack;
+		createNewTrackOverlay.OnCancel += OnCancelNewTrack;
+
+		/*string trackId = "Guitar1";
+		string trackName = "Guitar 1";
+
+		TrackData trackData = new TrackData(trackId, trackName, InstrumentId.Guitar);
+		songData.trackList.Add(trackData);
+
 		UserSongDataStore.storeSongData(songData);
 
-		Application.LoadLevel("Editor");
+		Application.LoadLevel("Editor");*/
+	}
+
+	private void OnCreateNewTrack(TrackData trackData)
+	{
+		songData.trackList.Add(trackData);
+		UserSongDataStore.storeSongData(songData);
+
+		setEnabled(true);
+		GameObject.Destroy(createNewTrackOverlay.gameObject);
+
+		//Update the track list with the new data
+		trackList.UpdateData(songData);
+	}
+
+	private void OnCancelNewTrack()
+	{
+		setEnabled(true);
+		GameObject.Destroy(createNewTrackOverlay.gameObject);
 	}
 
 	private void OnBackButtonClick()
