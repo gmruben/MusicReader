@@ -98,7 +98,7 @@ public class GameBar : MonoBehaviour
 		}
 	}
 	
-	public void init(SongData songData)
+	public void init(BarData barData)
 	{
 		beatsPerSecond = (float) (beatsPerMinute / 60.0f);
 		secondsPerBeat = 1.0f / beatsPerSecond;
@@ -109,9 +109,9 @@ public class GameBar : MonoBehaviour
 
 		noteList = new List<GameNote>();
 
-		for (int i = 0; i < songData.noteList.Count; i++)
+		for (int i = 0; i < barData.noteList.Count; i++)
 		{
-			NoteData noteData = songData.noteList[i];
+			NoteData noteData = barData.noteList[i];
 			if (!noteData.isRest)
 			{
 				float posx = offset + (noteData.start * segmentWidth);
@@ -121,7 +121,7 @@ public class GameBar : MonoBehaviour
 				noteObject.transform.localPosition = new Vector3(posx, 0, 0);
 
 				GameNote gameNote = noteObject.GetComponent<GameNote>();
-				gameNote.Init(songData.noteList[i]);
+				gameNote.Init(barData.noteList[i]);
 				noteList.Add(gameNote);
 			}
 		}

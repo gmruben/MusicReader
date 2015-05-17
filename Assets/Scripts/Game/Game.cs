@@ -12,6 +12,9 @@ public class Game : MonoBehaviour
 
 	private Note currentNote;
 
+	private SongData songData;
+	private TrackData trackData;
+
 	void Start()
 	{
 		init ();
@@ -25,11 +28,10 @@ public class Game : MonoBehaviour
 
 		gameHUD.Init();
 
-		//Load song data
-		UserSongDataStore.retrieveSongDataList();
-		SongData songData = UserSongDataStore.retrieveSongData("Song1");
+		songData = GameConfig.songData;
+		trackData = GameConfig.trackData;
 
-		gameBar.init(songData);
+		gameBar.init(trackData.barList[0]);
 
 		gameBar.onHitNote += onHitNote;
 		gameBar.onMissNote += onMissNote;

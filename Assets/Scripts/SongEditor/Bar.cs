@@ -15,24 +15,19 @@ public class Bar : MonoBehaviour
 	public GameObject topLedgerLines;
 	public GameObject bottomLedgerLines;
 
-	public BarData barData { get; private set; }
+	public EditorBarData barData { get; private set; }
 
 	private BarUnit[] barUnitList;
 	private BoxCollider2D collider;
 
 	private List<Note> noteList;
 
-	void Start()
-	{
-		init ();
-	}
-
 	public void init()
 	{
 		topLedgerLines.SetActive(false);
 		bottomLedgerLines.SetActive(false);
 
-		barData = new BarData();
+		barData = new EditorBarData();
 		collider = GetComponent<BoxCollider2D>();
 
 		noteList = new List<Note>();

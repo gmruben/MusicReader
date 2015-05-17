@@ -1,7 +1,6 @@
 ﻿
 public enum InstrumentId
 {
-	Vocal,
-	Piano,
+	Vocals,
 	Guitar,
 }

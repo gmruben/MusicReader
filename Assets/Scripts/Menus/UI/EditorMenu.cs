@@ -7,18 +7,12 @@ public class EditorMenu : UIMenu
 {
 	private const int maxTempo = 200;
 
-	public SaveSongData_Overlay saveSongData_Overlay;
-	public LoadSongData_Overlay loadSongData_Overlay;
-
-	private ChangeInstrumentOverlay changeInstrumentOverlay;
-
 	public UIButton saveButton;
-	public UIButton loadButton;
 	public UIButton backButton;
 
-	public UIButton changeInstrumentButton;
-
 	public InputField tempoInput;
+
+	public Text songTitleLabel;
 
 	public UIButton playButton;
 	public UIButton stopButton;
@@ -45,23 +39,35 @@ public class EditorMenu : UIMenu
 
 	private int tempoValue;
 
+	private SongData songData;
+	private TrackData trackData;
+
 	void Start()
 	{
+		if (GameConfig.songData == null)
+		{
+			UserSongDataStore.retrieveSongDataList();
+
+			GameConfig.songData = (SongData) UserSongDataStore.retrieveFirstSongData();
+			GameConfig.trackData = GameConfig.songData.trackList[0];
+
+			Debug.Log(GameConfig.songData);
+		}
+
 		Init ();
 	}
 
 	public void Init()
 	{
+		songData = GameConfig.songData;
+		trackData = GameConfig.trackData;
+
+		songTitleLabel.text = songData.name + " - " + trackData.name;
+
 		tempoValue = 120;
 
-		saveSongData_Overlay.gameObject.SetActive (false);
-		loadSongData_Overlay.gameObject.SetActive (false);
-
 		saveButton.onClick += onSaveButtonClick;
-		loadButton.onClick += onLoadButtonClick;
 		backButton.onClick += onBackButtonClick;
-
-		changeInstrumentButton.onClick += onChangeInstrumentButtonClick;
 
 		playButton.onClick += onPlayButtonClick;
 		stopButton.onClick += onStopButtonClick;
@@ -75,14 +81,22 @@ public class EditorMenu : UIMenu
 		tempoInput.onEndEdit.AddListener(onTempoChange);
 
 		createSymbolButtons();
+
+		//Load song data
+		editor.Init(trackData);
+		editor.LoadData();
 	}
 
 	private void createSymbolButtons()
 	{
+		//HACK: Maybe do the same as with note pitch?
+		CursorNoteData crotchetCursorNoteData = new CursorNoteData(NoteId.Crotchet, false);
+		cursor.updateNoteData(crotchetCursorNoteData);
+
 		dottedMinimButton.setData(new CursorNoteData(NoteId.DottedMinim, false));
 		minimButton.setData(new CursorNoteData(NoteId.Minim, false));
 		dottedCrotchetButton.setData(new CursorNoteData(NoteId.DottedCrotchet, false));
-		crotchetButton.setData(new CursorNoteData(NoteId.Crotchet, false));
+		crotchetButton.setData(crotchetCursorNoteData);
 		dottedQuaverButton.setData(new CursorNoteData(NoteId.DottedQuaver, false));
 		quaverButton.setData(new CursorNoteData(NoteId.Quaver, false));
 		semiquaverButton.setData(new CursorNoteData(NoteId.Semiquaver, false));
@@ -115,37 +129,9 @@ public class EditorMenu : UIMenu
 
 	private void onSaveButtonClick()
 	{
-		/*saveSongData_Overlay.okButton.onClick += onSaveSongDataOkButtonClick;
-		saveSongData_Overlay.cancelButton.onClick += onSaveSongDataCancelButtonClick;
-
-		saveSongData_Overlay.gameObject.SetActive (true);*/
-
-		SongData songData = new SongData();
-
-		songData.id = "Song1";
-		songData.name = "Song 1";
-
-		songData.noteList = editor.retrieveData();
+		trackData.barList = editor.retrieveBarDataList();
 
 		UserSongDataStore.storeSongData(songData);
-	}
-
-	private void onLoadButtonClick()
-	{
-		/*loadSongData_Overlay.cancelButton.onClick += onLoadSongDataCancelButtonClick;
-		
-		loadSongData_Overlay.gameObject.SetActive (true);*/
-
-		UserSongDataStore.retrieveSongDataList();
-		editor.loadData(UserSongDataStore.retrieveSongData("Song1").noteList);
-	}
-
-	private void onChangeInstrumentButtonClick()
-	{
-		GameObject overlayGameObject = GameObject.Instantiate(MenuManager.instance.changeInstrumentOverlayPrefab) as GameObject;
-
-		changeInstrumentOverlay = overlayGameObject.GetComponent<ChangeInstrumentOverlay>();
-		changeInstrumentOverlay.init();
 	}
 
 	private void onPlayButtonClick()
@@ -184,29 +170,5 @@ public class EditorMenu : UIMenu
 		}
 
 		tempoValue = intValue;
-	}
-
-	private void onSaveSongDataOkButtonClick()
-	{
-		saveSongData_Overlay.okButton.onClick -= onSaveSongDataOkButtonClick;
-		saveSongData_Overlay.cancelButton.onClick -= onSaveSongDataCancelButtonClick;
-
-		//UserSongDataStore.storeSongData(songData);
-	}
-
-	private void onSaveSongDataCancelButtonClick()
-	{
-		saveSongData_Overlay.okButton.onClick -= onSaveSongDataOkButtonClick;
-		saveSongData_Overlay.cancelButton.onClick -= onSaveSongDataCancelButtonClick;
-
-		saveSongData_Overlay.gameObject.SetActive (false);
-	}
-
-	private void onLoadSongDataCancelButtonClick()
-	{
-		loadSongData_Overlay.cancelButton.onClick -= onLoadSongDataCancelButtonClick;
-		
-		loadSongData_Overlay.gameObject.SetActive (false);
-		
 	}
 }

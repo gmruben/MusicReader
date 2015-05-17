@@ -6,7 +6,6 @@ public class Editor : MonoBehaviour
 {
 	private const int barSize = 1200;
 	private const float speed = 2.5f;
-	private const int numBars = 10;
 
 	public GameObject barPrefab;
 
@@ -26,10 +25,7 @@ public class Editor : MonoBehaviour
 
 	private EditorPlayer editorPlayer;
 
-	void Start()
-	{
-		init ();
-	}
+	private TrackData trackData;
 
 	void Update()
 	{
@@ -51,8 +47,9 @@ public class Editor : MonoBehaviour
 		}
 	}
 
-	public void init()
+	public void Init(TrackData trackData)
 	{
+		this.trackData = trackData;
 		editorPlayer = new EditorPlayer(midiPlayer);
 
 		currentIndex = 0;
@@ -63,8 +60,16 @@ public class Editor : MonoBehaviour
 		inMove = false;
 		targetX = 0;
 
+		//If the song doesn't have any bars yet, add one
+		if (trackData.barList.Count == 0)
+		{
+			BarData barData = new BarData(120);
+			trackData.barList.Add(barData);
+		}
+
+		//Create the bars
 		barList = new List<Bar>();
-		for (int i = 0; i < numBars; i++)
+		for (int i = 0; i < trackData.barList.Count; i++)
 		{
 			GameObject barGameObject = GameObject.Instantiate(barPrefab) as GameObject;
 			Bar bar = barGameObject.GetComponent<Bar>();
@@ -72,13 +77,14 @@ public class Editor : MonoBehaviour
 			bar.transform.parent = cachedTransform;
 			bar.transform.localPosition = new Vector3(i * barSize, 0, 0);
 
+			bar.init();
 			barList.Add(bar);
 		}
 	}
 
 	public void move(int direction)
 	{
-		if ((direction < 0 && cachedTransform.position.x > -numBars * barSize) || (direction > 0 && cachedTransform.position.x < 0))
+		if ((direction < 0 && cachedTransform.position.x > -trackData.barList.Count * barSize) || (direction > 0 && cachedTransform.position.x < 0))
 		{
 			inMove = true;
 			targetX = cachedTransform.position.x + (barSize * direction * 0.5f);
@@ -92,7 +98,7 @@ public class Editor : MonoBehaviour
 		inPlay = true;
 		cachedTransform.position = cachedTransform.position.setX(0);
 
-		editorPlayer.play(retrieveData());
+		//editorPlayer.play(retrieveData());
 	}
 
 	public void pause()
@@ -101,21 +107,27 @@ public class Editor : MonoBehaviour
 		cachedTransform.position = cachedTransform.position.setX(0);
 	}
 
-	public List<NoteData> retrieveData()
+	public List<BarData> retrieveBarDataList()
 	{
-		List<NoteData> noteDataList = new List<NoteData>();
+		List<BarData> barDataList = new List<BarData>();
 		foreach(Bar bar in barList)
 		{
-			noteDataList.AddRange(bar.barData.retrieveNoteDataList());
+			BarData barData = new BarData(120);
+			barData.noteList = bar.barData.retrieveNoteDataList();
+
+			barDataList.Add(barData);
 		}
-		return noteDataList;
+		return barDataList;
 	}
 
-	public void loadData(List<NoteData> noteList)
+	public void LoadData()
 	{
-		for (int i = 0; i < barList.Count; i++)
+		for (int i = 0; i < trackData.barList.Count; i++)
 		{
-			barList[i].drawNotes(noteList);
+			Bar bar = barList[i];
+			BarData barData = trackData.barList[i];
+
+			bar.drawNotes(barData.noteList);
 		}
 	}
 }

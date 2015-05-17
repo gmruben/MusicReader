@@ -21,7 +21,7 @@ public class EditSongMenu : UIMenu
 		this.songData = songData;
 		this.comeFromEditorMenu = comeFromEditorMenu;
 
-		title.text = "EDIT SONG (" + songData.name + ")";
+		title.text = "EDIT SONG - " + songData.name;
 
 		trackList.Init(songData);
 
@@ -46,16 +46,6 @@ public class EditSongMenu : UIMenu
 
 		createNewTrackOverlay.OnCreate += OnCreateNewTrack;
 		createNewTrackOverlay.OnCancel += OnCancelNewTrack;
-
-		/*string trackId = "Guitar1";
-		string trackName = "Guitar 1";
-
-		TrackData trackData = new TrackData(trackId, trackName, InstrumentId.Guitar);
-		songData.trackList.Add(trackData);
-
-		UserSongDataStore.storeSongData(songData);
-
-		Application.LoadLevel("Editor");*/
 	}
 
 	private void OnCreateNewTrack(TrackData trackData)

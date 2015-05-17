@@ -28,8 +28,6 @@ public class EditorTrackList : MonoBehaviour
 		float posY = 0;
 		trackButton.gameObject.SetActive(true);
 
-		//foreach(InstrumentId instrumentId in Enum.GetValues(typeof(InstrumentId)))
-		//{
 		foreach(TrackData trackData in songData.trackList)
 		{
 			TrackButton button = (GameObject.Instantiate(trackButton.gameObject) as GameObject).GetComponent<TrackButton>();
@@ -60,6 +58,9 @@ public class EditorTrackList : MonoBehaviour
 
 	private void OnTrackSelect(TrackData trackData)
 	{
+		GameConfig.songData = songData;
+		GameConfig.trackData = trackData;
+
 		Application.LoadLevel("Editor");
 	}
 

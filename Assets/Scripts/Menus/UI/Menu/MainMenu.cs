@@ -16,7 +16,7 @@ public class MainMenu : UIMenu
 
 	private void OnGameButtonClick()
 	{
-		Application.LoadLevel("Game");
+		App.instance.ShowGameSelectSongMenu();
 	}
 
 	private void OnEditorButtonClick()

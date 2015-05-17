@@ -63,4 +63,13 @@ public class UserSongDataStore
 		fileWriter.Write(SongData.parseSongDataToJson(songData));
 		fs.Close();
 	}
+
+	public static SongData retrieveFirstSongData()
+	{
+		foreach(KeyValuePair<string, SongData> pair in songDataList)
+		{
+			return pair.Value;
+		}
+		return null;
+	}
 }

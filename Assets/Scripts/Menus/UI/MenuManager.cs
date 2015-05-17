@@ -3,14 +3,15 @@ using System.Collections;
 
 public class MenuManager : Singleton<MenuManager>
 {
-	public GameObject changeInstrumentOverlayPrefab;
-
 	[Header("MENUS")]
 	public GameObject mainMenuPrefab;
 	public GameObject songEditorMenuPrefab;
 	public GameObject createNewSongMenuPrefab;
 	public GameObject editorSelectSongMenuPrefab;
 	public GameObject editSongMenuPrefab;
+
+	[Header("GAME")]
+	public GameObject gameSelectSongMenuPrefab;
 
 	[Header("OVERLAYS")]
 	public GameObject createNewTrackOverlayPrefab;
@@ -44,6 +45,15 @@ public class MenuManager : Singleton<MenuManager>
 
 	#endregion
 
+	#region GAME
+	
+	public GameSelectSongMenu instantiateGameSelectSongMenu()
+	{
+		return (GameObject.Instantiate(gameSelectSongMenuPrefab) as GameObject).GetComponent<GameSelectSongMenu>();
+	}
+	
+	#endregion
+
 	#region OVERLAYS
 
 	public CreateNewTrackOverlay instantiateCreateNewTrackOverlay()
@@ -52,5 +62,6 @@ public class MenuManager : Singleton<MenuManager>
 	}
 
 	#endregion
+
 	public override void Init() { }
 }

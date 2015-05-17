@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,9 +8,6 @@ public class SongData
 {
 	public string id;
 	public string name;
-	
-	public List<NoteData> noteList = new List<NoteData>();
-	public List<BarData2> barList = new List<BarData2>();
 
 	public List<TrackData> trackList = new List<TrackData>();
 
@@ -21,11 +19,8 @@ public class SongData
 		songData.id = jsonValueToString(jsonObject["id"].ToString());
 		songData.name = jsonValueToString(jsonObject["name"].ToString());
 
-		JsonArray jsonArray = JsonArray.Parse(jsonObject["noteList"].ToString()) as JsonArray;
-		songData.noteList = jsonArrayToNoteList(jsonArray);
-
 		JsonArray trackListJsonArray = JsonArray.Parse(jsonObject["trackList"].ToString()) as JsonArray;
-		songData.trackList = jsonArrayToTrackList(trackListJsonArray);
+		songData.trackList = jsonArrayToDataList<TrackData>(trackListJsonArray, jsonObjectToTrackData);
 
 		return songData;
 	}
@@ -37,30 +32,9 @@ public class SongData
 		jsonObject.Add("id", songData.id);
 		jsonObject.Add("name", songData.name);
 
-		jsonObject.Add("noteList", noteListToJsonArray(songData.noteList));
-		jsonObject.Add("trackList", trackListToJsonArray(songData.trackList));
+		jsonObject.Add("trackList", dataListToJsonArray(songData.trackList, trackDataToJsonObject));
 		
 		return jsonObject.ToString();
-	}
-
-	private static JsonArray trackListToJsonArray(List<TrackData> trackList)
-	{
-		JsonArray jsonArray = new JsonArray();
-		foreach (TrackData trackData in trackList)
-		{
-			jsonArray.Add(trackDataToJsonObject(trackData));
-		}
-		return jsonArray;
-	}
-
-	private static List<TrackData> jsonArrayToTrackList(JsonArray jsonArray)
-	{
-		List<TrackData> trackList = new List<TrackData>();
-		foreach (JsonObject jsonObject in jsonArray)
-		{
-			trackList.Add(jsonObjectToTrackData(jsonObject));
-		}
-		return trackList;
 	}
 
 	private static JsonObject trackDataToJsonObject(TrackData trackData)
@@ -70,6 +44,8 @@ public class SongData
 		jsonObject.Add("id", trackData.id);
 		jsonObject.Add("name", trackData.name);
 		jsonObject.Add("instrumentId", trackData.instrumentId.ToString());
+
+		jsonObject.Add("barList", dataListToJsonArray<BarData>(trackData.barList, barDataToJsonObject));
 		
 		return jsonObject;
 	}
@@ -81,50 +57,92 @@ public class SongData
 		InstrumentId instrumentId = (InstrumentId) System.Enum.Parse(typeof(InstrumentId), jsonValueToString(jsonObject["instrumentId"].ToString()));
 
 		TrackData trackData = new TrackData(id, name, instrumentId);
+
+		//Add note list to track
+		JsonArray jsonArray = JsonArray.Parse(jsonObject["barList"].ToString()) as JsonArray;
+		trackData.barList = jsonArrayToDataList<BarData>(jsonArray, jsonObjectToBarData);
+
 		return trackData;
 	}
 
-	private static JsonArray noteListToJsonArray(List<NoteData> noteList)
+	private static JsonObject barDataToJsonObject(BarData barData)
 	{
-		JsonArray jsonArray = new JsonArray();
-		foreach (NoteData noteData in noteList)
-		{
-			jsonArray.Add(noteDataToJsonObject(noteData));
-		}
-		return jsonArray;
-	}
+		JsonObject jsonObject = new JsonObject();
 
-	private static List<NoteData> jsonArrayToNoteList(JsonArray jsonArray)
-	{
-		List<NoteData> noteList = new List<NoteData>();
-		foreach (JsonObject jsonObject in jsonArray)
-		{
-			noteList.Add(jsonObjectToNoteData(jsonObject));
-		}
-		return noteList;
+		jsonObject.Add("bpm", barData.beatsPerMinute);
+
+		jsonObject.Add("noteList", dataListToJsonArray<NoteData>(barData.noteList, noteDataToJsonObject));
+		
+		return jsonObject;
+	}
+	
+	private static BarData jsonObjectToBarData(JsonObject jsonObject)
+	{	
+		int beatsPerMinute = int.Parse(jsonObject["bpm"].ToString());
+
+		BarData barData = new BarData(beatsPerMinute);
+
+		JsonArray jsonArray = JsonArray.Parse(jsonObject["noteList"].ToString()) as JsonArray;
+		barData.noteList = jsonArrayToDataList<NoteData>(jsonArray, jsonObjectToNoteData);
+		
+		return barData;
 	}
 
 	private static JsonObject noteDataToJsonObject(NoteData noteData)
 	{
 		JsonObject jsonObject = new JsonObject();
-
+		
 		jsonObject.Add("start", noteData.start);
 		jsonObject.Add("duration", noteData.duration);
 		jsonObject.Add("pitch", noteData.pitch.StringValue);
-
+		
 		return jsonObject;
 	}
-
+	
 	private static NoteData jsonObjectToNoteData(JsonObject jsonObject)
 	{
 		string pitchString  = jsonValueToString(jsonObject["pitch"].ToString());
-
+		
 		int start = int.Parse(jsonObject["start"].ToString());
 		int duration = int.Parse(jsonObject["duration"].ToString());
 		NotePitch pitch = NotePitch.ParseString(pitchString);
-
+		
 		NoteData noteData = new NoteData(pitch, start, duration);
 		return noteData;
+	}
+
+	/// <summary>
+	/// Generic function that parses a list of objects of type T to a JsonArray.
+	/// </summary>
+	/// <returns>The JsonArray.</returns>
+	/// <param name="dataList">The list of objects of type T.</param>
+	/// <param name="parseDataToJsonFunc">Function that parses an object of type T to JsonObject.</param>
+	/// <typeparam name="T">The type of the object to be parsed.</typeparam>
+	private static JsonArray dataListToJsonArray<T>(List<T> dataList, System.Func<T, JsonObject> parseDataToJsonFunc)
+	{
+		JsonArray jsonArray = new JsonArray();
+		foreach (T data in dataList)
+		{
+			jsonArray.Add(parseDataToJsonFunc(data));
+		}
+		return jsonArray;
+	}
+
+	/// <summary>
+	/// Generic function that parses a JsonArray to a list of objects of type T.
+	/// </summary>
+	/// <returns>The list of object of type T.</returns>
+	/// <param name="jsonArray">The JsonArray.</param>
+	/// <param name="parseJsonToDataFunc">Function that parses a JsonObject to an object of type T.</param>
+	/// <typeparam name="T">The 1st type parameter.</typeparam>
+	private static List<T> jsonArrayToDataList<T>(JsonArray jsonArray, System.Func<JsonObject, T> parseJsonToDataFunc)
+	{
+		List<T> dataList = new List<T>();
+		foreach (JsonObject jsonObject in jsonArray)
+		{
+			dataList.Add(parseJsonToDataFunc(jsonObject));
+		}
+		return dataList;
 	}
 
 	/// <summary>

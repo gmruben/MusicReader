@@ -21,6 +21,17 @@ public class App : Singleton<App>
 		menus.Push (mainMenu);
 	}
 
+	public void ShowGameSelectSongMenu()
+	{
+		UIMenu currentMenu = menus.Peek();
+		currentMenu.setActive(false);
+		
+		GameSelectSongMenu gameSelectSongMenu = MenuManager.instance.instantiateGameSelectSongMenu();
+		gameSelectSongMenu.Init();
+		
+		menus.Push(gameSelectSongMenu);
+	}
+
 	public void ShowSongEditorMenu()
 	{
 		UIMenu currentMenu = menus.Peek();
