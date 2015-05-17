@@ -39,6 +39,9 @@ public class GameBar : MonoBehaviour
 	{
 		cachedTransform.position += Vector3.left * speed * Time.deltaTime;
 
+		//Return if there is no current note
+		if (currentNote == null) return;
+
 		float diff = Time.time - currentTime;
 		if (Input.GetKeyDown(KeyCode.A))
 		{
@@ -98,7 +101,7 @@ public class GameBar : MonoBehaviour
 		}
 	}
 	
-	public void init(BarData barData)
+	public void init(int index, List<NoteData> noteDataList)
 	{
 		beatsPerSecond = (float) (beatsPerMinute / 60.0f);
 		secondsPerBeat = 1.0f / beatsPerSecond;
@@ -109,9 +112,9 @@ public class GameBar : MonoBehaviour
 
 		noteList = new List<GameNote>();
 
-		for (int i = 0; i < barData.noteList.Count; i++)
+		for (int i = 0; i < noteDataList.Count; i++)
 		{
-			NoteData noteData = barData.noteList[i];
+			NoteData noteData = noteDataList[i];
 			if (!noteData.isRest)
 			{
 				float posx = offset + (noteData.start * segmentWidth);
@@ -121,13 +124,13 @@ public class GameBar : MonoBehaviour
 				noteObject.transform.localPosition = new Vector3(posx, 0, 0);
 
 				GameNote gameNote = noteObject.GetComponent<GameNote>();
-				gameNote.Init(barData.noteList[i]);
+				gameNote.Init(noteDataList[i]);
 				noteList.Add(gameNote);
 			}
 		}
 
 		//Where the actual bar starts (there is a 1 beat rest at the beginning)
-		startTime = initialRestBeatCount * secondsPerBeat;
+		startTime = (initialRestBeatCount + (index * 16)) * secondsPerBeat;
 
 		checkNextNote();
 	}

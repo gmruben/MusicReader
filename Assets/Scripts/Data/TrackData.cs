@@ -18,4 +18,18 @@ public class TrackData
 
 		barList = new List<BarData>();
 	}
+
+	/// <summary>
+	/// Retrieves a list with all the notes of all the bars.
+	/// </summary>
+	/// <returns>The note list.</returns>
+	public List<NoteData> retrieveNoteList()
+	{
+		List<NoteData> noteList = new List<NoteData>();
+		foreach (BarData barData in barList)
+		{
+			noteList.AddRange(barData.noteList);
+		}
+		return noteList;
+	}
 }

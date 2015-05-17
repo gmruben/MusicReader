@@ -60,25 +60,20 @@ public class Editor : MonoBehaviour
 		inMove = false;
 		targetX = 0;
 
+		barList = new List<Bar>();
+
 		//If the song doesn't have any bars yet, add one
 		if (trackData.barList.Count == 0)
 		{
-			BarData barData = new BarData(120);
-			trackData.barList.Add(barData);
+			AddNewBar();
 		}
-
-		//Create the bars
-		barList = new List<Bar>();
-		for (int i = 0; i < trackData.barList.Count; i++)
+		else
 		{
-			GameObject barGameObject = GameObject.Instantiate(barPrefab) as GameObject;
-			Bar bar = barGameObject.GetComponent<Bar>();
-
-			bar.transform.parent = cachedTransform;
-			bar.transform.localPosition = new Vector3(i * barSize, 0, 0);
-
-			bar.init();
-			barList.Add(bar);
+			//Create the bars
+			for (int i = 0; i < trackData.barList.Count; i++)
+			{
+				InstantiateBar(i);
+			}
 		}
 	}
 
@@ -112,7 +107,7 @@ public class Editor : MonoBehaviour
 		List<BarData> barDataList = new List<BarData>();
 		foreach(Bar bar in barList)
 		{
-			BarData barData = new BarData(120);
+			BarData barData = new BarData(bar.barData.index, 120);
 			barData.noteList = bar.barData.retrieveNoteDataList();
 
 			barDataList.Add(barData);
@@ -127,7 +122,29 @@ public class Editor : MonoBehaviour
 			Bar bar = barList[i];
 			BarData barData = trackData.barList[i];
 
-			bar.drawNotes(barData.noteList);
+			bar.LoadData(barData.noteList);
 		}
+	}
+
+	public void AddNewBar()
+	{
+		int newBarIndex = trackData.barList.Count;
+
+		BarData barData = new BarData(newBarIndex, 120);
+		trackData.barList.Add(barData);
+
+		InstantiateBar(trackData.barList.Count - 1);
+	}
+
+	private void InstantiateBar(int index)
+	{
+		GameObject barGameObject = GameObject.Instantiate(barPrefab) as GameObject;
+		Bar bar = barGameObject.GetComponent<Bar>();
+		
+		bar.transform.parent = cachedTransform;
+		bar.transform.localPosition = new Vector3(index * barSize, 0, 0);
+		
+		bar.Init(index);
+		barList.Add(bar);
 	}
 }

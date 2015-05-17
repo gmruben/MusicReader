@@ -3,8 +3,11 @@ using System.Collections;
 
 public class Game : MonoBehaviour
 {
+	private const float startX = 262.5f;
+	private const float sizeX = 1200.0f;
+
 	public GameHUD gameHUD;
-	public GameBar gameBar;
+	//public GameBar gameBar;
 
 	private int score;
 	private int multiplier;
@@ -17,6 +20,16 @@ public class Game : MonoBehaviour
 
 	void Start()
 	{
+		if (GameConfig.songData == null)
+		{
+			UserSongDataStore.retrieveSongDataList();
+			
+			GameConfig.songData = (SongData) UserSongDataStore.retrieveFirstSongData();
+			GameConfig.trackData = GameConfig.songData.trackList[0];
+			
+			Debug.Log(GameConfig.songData);
+		}
+
 		init ();
 	}
 
@@ -31,10 +44,16 @@ public class Game : MonoBehaviour
 		songData = GameConfig.songData;
 		trackData = GameConfig.trackData;
 
-		gameBar.init(trackData.barList[0]);
+		for (int i = 0; i < trackData.barList.Count; i++)
+		{
+			GameBar gameBar = (GameObject.Instantiate(EntityManager.instance.gameBarPrefab) as GameObject).GetComponent<GameBar>();
 
-		gameBar.onHitNote += onHitNote;
-		gameBar.onMissNote += onMissNote;
+			gameBar.transform.position = new Vector3(startX + (sizeX * i), 0, 0);
+			gameBar.init(i, trackData.barList[i].noteList);
+
+			gameBar.onHitNote += onHitNote;
+			gameBar.onMissNote += onMissNote;
+		}
 	}
 
 	private void onHitNote()

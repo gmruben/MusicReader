@@ -9,6 +9,8 @@ public class Bar : MonoBehaviour
 
 	private NotePitch centralNotePitch = NotePitch.B4;
 
+	public TextMesh indexLabel;
+
 	public GameObject barUnitPrefab;
 	public GameObject notePrefab;
 
@@ -22,12 +24,15 @@ public class Bar : MonoBehaviour
 
 	private List<Note> noteList;
 
-	public void init()
+	public void Init(int index)
 	{
+		//Set index label
+		indexLabel.text = (index + 1).ToString();
+
 		topLedgerLines.SetActive(false);
 		bottomLedgerLines.SetActive(false);
 
-		barData = new EditorBarData();
+		barData = new EditorBarData(index);
 		collider = GetComponent<BoxCollider2D>();
 
 		noteList = new List<Note>();
@@ -144,10 +149,41 @@ public class Bar : MonoBehaviour
 			noteList.Add(note);
 			start += noteData.duration;
 		}
+
+		//PrintNotes(noteDataList);
 	}
 
 	private int calculateNoteIndex(Vector3 position)
 	{
 		return Mathf.FloorToInt(position.y / lineHeight);
+	}
+
+	public void LoadData(List<NoteData> noteList)
+	{
+		foreach (NoteData noteData in noteList)
+		{
+			int noteEnd = noteData.start + noteData.duration;
+			for (int i = noteData.start; i < noteEnd; i++)
+			{
+				barData.notes[i] = noteData;
+			}
+		}
+
+		drawNotes(barData.retrieveNoteDataList());
+	}
+
+	public void PrintNotes(List<NoteData> noteList)
+	{
+		Debug.Log("------");
+		foreach (NoteData noteData in noteList)
+		{
+			Debug.Log("NOTE: " + noteData.duration + " - " + noteData.pitch.StringValue);
+		}
+		
+		for (int i = 0; i < barData.notes.Length; i++)
+		{
+			Debug.Log("NOTES[" + i + "]: " + barData.notes[i].duration + " - " + barData.notes[i].pitch.StringValue);
+		}
+		Debug.Log("------");
 	}
 }

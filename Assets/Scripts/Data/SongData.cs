@@ -69,6 +69,7 @@ public class SongData
 	{
 		JsonObject jsonObject = new JsonObject();
 
+		jsonObject.Add("index", barData.index);
 		jsonObject.Add("bpm", barData.beatsPerMinute);
 
 		jsonObject.Add("noteList", dataListToJsonArray<NoteData>(barData.noteList, noteDataToJsonObject));
@@ -78,9 +79,10 @@ public class SongData
 	
 	private static BarData jsonObjectToBarData(JsonObject jsonObject)
 	{	
+		int index = int.Parse(jsonObject["index"].ToString());
 		int beatsPerMinute = int.Parse(jsonObject["bpm"].ToString());
 
-		BarData barData = new BarData(beatsPerMinute);
+		BarData barData = new BarData(index, beatsPerMinute);
 
 		JsonArray jsonArray = JsonArray.Parse(jsonObject["noteList"].ToString()) as JsonArray;
 		barData.noteList = jsonArrayToDataList<NoteData>(jsonArray, jsonObjectToNoteData);

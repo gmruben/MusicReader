@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 public class EditorBarData
 {
-	private const int numPulses = 4;
 	private const int numPositions = 16;
 
+	public int index { get; private set; }
 	public NoteData[] notes { get; private set; }
 
-	public EditorBarData()
+	public EditorBarData(int index)
 	{
-		NoteData restNote = new NoteData(NotePitch.Rest, 0, numPulses);
+		this.index = index;
+		NoteData restNote = new NoteData(NotePitch.Rest, 0, numPositions);
 
 		notes = new NoteData[numPositions];
 		for (int i = 0; i < numPositions; i++)
@@ -20,27 +21,28 @@ public class EditorBarData
 		}
 	}
 
-	public void addNote(NoteData newNoteData, int position)
+	public void addNote(NoteData newNoteData, int newPosition)
 	{
-		NoteData prevNote = notes[position];
+		NoteData prevNote = notes[newPosition];
 
 		int prevNoteEnd = prevNote.start + prevNote.duration - 1;
-		int newNoteEnd = position + newNoteData.duration - 1;
+		int newNoteEnd = newPosition + newNoteData.duration - 1;
 
 		//Add the new note
-		for (int i = position; i <= newNoteEnd; i++)
+		for (int i = newPosition; i <= newNoteEnd; i++)
 		{
 			notes[i] = newNoteData;
 		}
 
 		//If the new note overlaps with the previous note
-		if (position >= prevNote.start && position <= prevNoteEnd)
+		if (newPosition > prevNote.start && newPosition <= prevNoteEnd)
 		{
 			//Create the previous note
-			int duration = (position - prevNote.start);
-			NoteData note = new NoteData(prevNote.pitch, prevNote.start, duration);
+			int noteDuration = (newPosition - prevNote.start);
+			int noteStart = prevNote.start;
+			int noteEnd = noteStart + noteDuration - 1;
 
-			int noteEnd = note.start + note.duration - 1;
+			NoteData note = new NoteData(prevNote.pitch, noteStart, noteDuration);
 			for (int i = note.start; i <= noteEnd; i++)
 			{
 				notes[i] = note;
@@ -52,16 +54,18 @@ public class EditorBarData
 		{
 			//Create new rest note
 			int restDuration = (prevNoteEnd - newNoteEnd);
-			NoteData restEditorNote = new NoteData(NotePitch.Rest, newNoteEnd, restDuration);
+			int restStart = newNoteEnd + 1;
+			int restEnd = restStart + restDuration - 1;
 
-			for (int i = newNoteEnd; i <= prevNoteEnd; i++)
+			NoteData restEditorNote = new NoteData(NotePitch.Rest, restStart, restDuration);
+			for (int i = restStart; i <= restEnd; i++)
 			{
 				notes[i] = restEditorNote;
 			}
 		}
 
 		//Merge the rest notes
-		mergeRestNotes();
+		//mergeRestNotes();
 	}
 
 	/// <summary>
@@ -99,29 +103,15 @@ public class EditorBarData
 		int index = 0;
 		List<NoteData> noteDataList = new List<NoteData>();
 
-		int iterations = 0;
 		do
 		{
 			NoteData editorNoteData = notes[index];
 			noteDataList.Add(editorNoteData);
 
 			index += editorNoteData.duration;
-			iterations++;
 		}
-		while (index < numPositions && iterations < 20);
+		while (index < numPositions);
 
 		return noteDataList;
 	}
 }
-
-/*public class EditorNoteData
-{
-	public int start;
-	public NoteData noteData;
-
-	public EditorNoteData(int start, NoteData noteData)
-	{
-		this.start = start;
-		this.noteData = noteData;
-	}
-}*/

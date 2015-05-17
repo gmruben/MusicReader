@@ -19,6 +19,8 @@ public class CreateNewTrackOverlay : UIMenu
 
 	public void Init()
 	{
+		trackNameInput.text = "VOCALS";
+
 		instrumentList.Init();
 		instrumentList.gameObject.SetActive(false);
 

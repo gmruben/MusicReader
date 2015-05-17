@@ -7,6 +7,7 @@ public class EditorMenu : UIMenu
 {
 	private const int maxTempo = 200;
 
+	public UIButton newBarButton;
 	public UIButton saveButton;
 	public UIButton backButton;
 
@@ -65,6 +66,8 @@ public class EditorMenu : UIMenu
 		songTitleLabel.text = songData.name + " - " + trackData.name;
 
 		tempoValue = 120;
+
+		newBarButton.onClick += onNewBarButtonClick;
 
 		saveButton.onClick += onSaveButtonClick;
 		backButton.onClick += onBackButtonClick;
@@ -125,6 +128,11 @@ public class EditorMenu : UIMenu
 	private void onSymbolButtonClick(CursorNoteData cursorNoteData)
 	{
 		cursor.updateNoteData(cursorNoteData);
+	}
+
+	private void onNewBarButtonClick()
+	{
+		editor.AddNewBar();
 	}
 
 	private void onSaveButtonClick()
