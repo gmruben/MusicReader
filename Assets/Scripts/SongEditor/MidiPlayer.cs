@@ -7,7 +7,7 @@ using CSharpSynth.Banks;
 public class MidiPlayer : MonoBehaviour
 {
 	private int bufferSize = 1024;
-	private string bankFilePath = "GM Bank/gm";
+	private string bankFilePath = "GM Bank/_CustomBank";
 	
 	private int midiNote = 60;
 	private int midiNoteVolume = 100;
@@ -17,6 +17,9 @@ public class MidiPlayer : MonoBehaviour
 	private float gain = 1f;
 	private StreamSynthesizer midiStreamSynthesizer;
 
+	private NoteData currentNoteData;
+	private float nextTime = 0;
+
 	void Awake ()
 	{
 		midiStreamSynthesizer = new StreamSynthesizer (44100, 2, bufferSize, 40);
@@ -25,12 +28,26 @@ public class MidiPlayer : MonoBehaviour
 		midiStreamSynthesizer.LoadBank (bankFilePath);
 	}
 
-	public void noteOn()
+	void Update()
 	{
-		midiStreamSynthesizer.NoteOn (1, midiNote, midiNoteVolume, midiInstrument);
+		if (currentNoteData != null)
+		{
+			if (Time.time > nextTime)
+			{
+				noteOff(currentNoteData.pitch.midiNote);
+			}
+		}
 	}
 
-	public void noteOff()
+	public void noteOn(NoteData noteData)
+	{
+		midiStreamSynthesizer.NoteOn (1, noteData.pitch.midiNote, midiNoteVolume, midiInstrument);
+
+		currentNoteData = noteData;
+		nextTime = Time.time + ((noteData.duration - 1) * (0.5f * 0.25f));
+	}
+
+	public void noteOff(int midiNote)
 	{
 		midiStreamSynthesizer.NoteOff (1, midiNote);
 	}
@@ -51,7 +68,6 @@ public class MidiPlayer : MonoBehaviour
 	//	so calling into many Unity functions from this function is not allowed ( a warning will show up ). 	
 	private void OnAudioFilterRead (float[] data, int channels)
 	{
-
 		//This uses the Unity specific float method we added to get the buffer
 		midiStreamSynthesizer.GetNext (sampleBuffer);
 			

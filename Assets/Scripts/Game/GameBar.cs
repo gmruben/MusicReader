@@ -101,7 +101,7 @@ public class GameBar : MonoBehaviour
 		}
 	}
 	
-	public void init(int index, List<NoteData> noteDataList)
+	public void init(int index, Key key, List<NoteData> noteDataList)
 	{
 		beatsPerSecond = (float) (beatsPerMinute / 60.0f);
 		secondsPerBeat = 1.0f / beatsPerSecond;
@@ -117,11 +117,15 @@ public class GameBar : MonoBehaviour
 			NoteData noteData = noteDataList[i];
 			if (!noteData.isRest)
 			{
+				int noteIndex = noteData.pitch.RetrieveNoteIndex(key);
+				int centralNoteIndex = centralNotePitch.RetrieveNoteIndex(key);
+
 				float posx = offset + (noteData.start * segmentWidth);
+				float posy = noteData.isRest ? 0.0f : (noteIndex - centralNoteIndex) * lineHeight;
 
 				GameObject noteObject = GameObject.Instantiate(EntityManager.instance.gameNotePrefab) as GameObject;
 				noteObject.transform.SetParent(transform);
-				noteObject.transform.localPosition = new Vector3(posx, 0, 0);
+				noteObject.transform.localPosition = new Vector3(posx, posy, 0);
 
 				GameNote gameNote = noteObject.GetComponent<GameNote>();
 				gameNote.Init(noteDataList[i]);

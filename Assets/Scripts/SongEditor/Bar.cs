@@ -23,6 +23,7 @@ public class Bar : MonoBehaviour
 	private BoxCollider2D collider;
 
 	private List<Note> noteList;
+	private Key currentKey;
 
 	public void Init(int index)
 	{
@@ -58,17 +59,22 @@ public class Bar : MonoBehaviour
 			showDuration(start, cursor.currentNoteData.duration);
 		}
 
-		int noteIndex = calculateNoteIndex(cursor.transform.position);
-		NotePitch notePitch = centralNotePitch.Add(noteIndex);
+		int noteBarIndex = calculateNoteIndex(cursor.transform.position);
+
+		NotePitch notePitch = centralNotePitch.Add(currentKey, noteBarIndex);
+		int noteIndex = notePitch.RetrieveNoteIndex(currentKey);
+
+		int topLedgerLineIndex = noteBarIndex + 5;
+		int bottomLedgerLineIndex = noteBarIndex - 5;
 
 		//Check whether we need to show ledger lines or not
-		topLedgerLines.SetActive(notePitch.IntValue >= NotePitch.A5.IntValue);
-		bottomLedgerLines.SetActive(notePitch.IntValue <= NotePitch.C3.IntValue);
+		topLedgerLines.SetActive(noteIndex >= topLedgerLineIndex);
+		bottomLedgerLines.SetActive(noteIndex <= bottomLedgerLineIndex);
 
 		topLedgerLines.transform.position = topLedgerLines.transform.position.setX(cursor.transform.position.x);
 		bottomLedgerLines.transform.position = bottomLedgerLines.transform.position.setX(cursor.transform.position.x);
 
-		cursor.noteHandler.position = cursor.noteHandler.position.setY(noteIndex * lineHeight);
+		cursor.noteHandler.position = cursor.noteHandler.position.setY(noteBarIndex * lineHeight);
 	}
 
 	public void onExit()
@@ -82,7 +88,7 @@ public class Bar : MonoBehaviour
 		float posx = (0.5f + start) * segmentWidth;
 
 		int noteIndex = calculateNoteIndex(cursor.noteHandler.position);
-		NotePitch notePitch = cursor.currentNoteData.isRest ? NotePitch.Rest : centralNotePitch.Add(noteIndex);
+		NotePitch notePitch = cursor.currentNoteData.isRest ? NotePitch.Rest : centralNotePitch.Add(currentKey, noteIndex);
 
 		NoteData noteData = new NoteData(notePitch, start, cursor.currentNoteData.duration);
 
@@ -131,10 +137,14 @@ public class Bar : MonoBehaviour
 		noteList.Clear();
 
 		int start = 0;
+		int centralNoteIndex = centralNotePitch.RetrieveNoteIndex(currentKey);
+
 		for (int i = 0; i < noteDataList.Count; i++)
 		{
+			int noteIndex = noteDataList[i].pitch.RetrieveNoteIndex(currentKey);
+
 			float posx = (0.5f + start) * segmentWidth;
-			float posy = noteDataList[i].isRest ? 0.0f : (noteDataList[i].pitch.IntValue - centralNotePitch.IntValue) * lineHeight;
+			float posy = noteDataList[i].isRest ? 0.0f : (noteIndex - centralNoteIndex) * lineHeight;
 
 			GameObject noteGameObject = GameObject.Instantiate(notePrefab) as GameObject;
 			
@@ -144,7 +154,7 @@ public class Bar : MonoBehaviour
 			NoteData noteData = noteDataList[i];
 			Note note = noteGameObject.GetComponent<Note>();
 
-			note.init(noteData);
+			note.init(currentKey, noteData);
 
 			noteList.Add(note);
 			start += noteData.duration;
@@ -158,8 +168,10 @@ public class Bar : MonoBehaviour
 		return Mathf.FloorToInt(position.y / lineHeight);
 	}
 
-	public void LoadData(List<NoteData> noteList)
+	public void LoadData(Key key, List<NoteData> noteList)
 	{
+		currentKey = key;
+
 		foreach (NoteData noteData in noteList)
 		{
 			int noteEnd = noteData.start + noteData.duration;

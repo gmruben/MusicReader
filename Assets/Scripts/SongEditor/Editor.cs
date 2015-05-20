@@ -25,6 +25,7 @@ public class Editor : MonoBehaviour
 
 	private EditorPlayer editorPlayer;
 
+	private SongData songData;
 	private TrackData trackData;
 
 	void Update()
@@ -47,10 +48,12 @@ public class Editor : MonoBehaviour
 		}
 	}
 
-	public void Init(TrackData trackData)
+	public void Init(SongData songData, TrackData trackData)
 	{
+		this.songData = songData;
 		this.trackData = trackData;
-		editorPlayer = new EditorPlayer(midiPlayer);
+
+		editorPlayer = new EditorPlayer(midiPlayer, trackData);
 
 		currentIndex = 0;
 		cachedTransform = transform;
@@ -77,15 +80,40 @@ public class Editor : MonoBehaviour
 		}
 	}
 
-	public void move(int direction)
+	private void Move(float deltaX)
 	{
-		if ((direction < 0 && cachedTransform.position.x > -trackData.barList.Count * barSize) || (direction > 0 && cachedTransform.position.x < 0))
-		{
-			inMove = true;
-			targetX = cachedTransform.position.x + (barSize * direction * 0.5f);
+		float targetPosX = cachedTransform.position.x + deltaX;
 
-			tween = new Tween(cachedTransform.position.x, targetX, speed);
-		}
+		if (targetPosX < -trackData.barList.Count * barSize) targetX = -trackData.barList.Count * barSize;
+		else if (targetPosX > 0) targetX = 0;
+		else targetX = targetPosX;
+
+		inMove = true;
+		tween = new Tween(cachedTransform.position.x, targetX, speed);
+	}
+
+	public void MoveLeft()
+	{
+		float deltaX = barSize * 0.5f;
+		Move (deltaX);
+	}
+
+	public void MoveRight()
+	{
+		float deltaX = -barSize * 0.5f;
+		Move (deltaX);
+	}
+
+	public void MoveFirst()
+	{
+		float deltaX = -cachedTransform.position.x;
+		Move (deltaX);
+	}
+
+	public void MoveLast()
+	{
+		float deltaX = -trackData.barList.Count * barSize - cachedTransform.position.x;
+		Move (deltaX);
 	}
 
 	public void play()
@@ -93,7 +121,7 @@ public class Editor : MonoBehaviour
 		inPlay = true;
 		cachedTransform.position = cachedTransform.position.setX(0);
 
-		//editorPlayer.play(retrieveData());
+		editorPlayer.play();
 	}
 
 	public void pause()
@@ -122,7 +150,7 @@ public class Editor : MonoBehaviour
 			Bar bar = barList[i];
 			BarData barData = trackData.barList[i];
 
-			bar.LoadData(barData.noteList);
+			bar.LoadData(songData.key, barData.noteList);
 		}
 	}
 

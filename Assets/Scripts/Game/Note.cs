@@ -8,7 +8,7 @@ public class Note : MonoBehaviour
 
 	private NoteData noteData;
 
-	public void init(NoteData noteData)
+	public void init(Key key, NoteData noteData)
 	{
 		string symbolId = NoteUtil.retrieveIdByDuration(noteData.duration, noteData.isRest);
 
@@ -16,10 +16,11 @@ public class Note : MonoBehaviour
 		noteSprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/" + symbolId);
 
 		//Check if we need to show ledger lines. HACK: This is hardcoded at the moment
-		if (noteData.pitch.IntValue <= 9)
+		int noteIndex = noteData.pitch.RetrieveNoteIndex(key);
+		if (noteIndex <= 9)
 		{
 			ledgerLineSprite.gameObject.SetActive(true);
-			ledgerLineSprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/LedgerLines/LedgerLines_" + noteData.pitch.IntValue);
+			ledgerLineSprite.sprite = Resources.Load<Sprite>("Sprites/Symbols/LedgerLines/LedgerLines_" + noteIndex);
 		}
 		else
 		{

@@ -49,7 +49,7 @@ public class Game : MonoBehaviour
 			GameBar gameBar = (GameObject.Instantiate(EntityManager.instance.gameBarPrefab) as GameObject).GetComponent<GameBar>();
 
 			gameBar.transform.position = new Vector3(startX + (sizeX * i), 0, 0);
-			gameBar.init(i, trackData.barList[i].noteList);
+			gameBar.init(i, songData.key, trackData.barList[i].noteList);
 
 			gameBar.onHitNote += onHitNote;
 			gameBar.onMissNote += onMissNote;

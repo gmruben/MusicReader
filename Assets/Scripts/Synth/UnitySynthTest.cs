@@ -9,7 +9,6 @@ using CSharpSynth.Midi;
 [RequireComponent (typeof(AudioSource))]
 public class UnitySynthTest : MonoBehaviour
 {
-
 	//UnitySynth - full Xplatform midi synth: http://forum.unity3d.com/threads/unitysynth-full-xplatform-midi-synth.130104/
 
 	//Public

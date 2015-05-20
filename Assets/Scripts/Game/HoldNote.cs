@@ -6,19 +6,22 @@ public class HoldNote : MonoBehaviour
 	private const float size = 150.0f;
 	private const float spriteSize = 1.5f;
 
-	public Transform center;
-	public Transform end;
+	public SpriteRenderer center;
+	public SpriteRenderer end;
 
 	public GameObject consumeAnimation;
 
 	private float holdDuration;
 
-	public void init(int duration)
+	public void init(NoteData noteData)
 	{
-		holdDuration = duration - 1;
+		holdDuration = noteData.duration - 1;
 
-		center.localScale = center.localScale.setX(holdDuration * spriteSize);
-		end.localPosition = end.localPosition.setX(holdDuration * size);
+		center.transform.localScale = center.transform.localScale.setX(holdDuration * spriteSize);
+		end.transform.localPosition = end.transform.localPosition.setX(holdDuration * size);
+
+		center.sprite = SpriteManager.instance.RetrieveButtonHoldCenterSpriteByNotePitch(noteData.pitch);
+		end.sprite = SpriteManager.instance.RetrieveButtonHoldEndSpriteByNotePitch(noteData.pitch);
 
 		consumeAnimation.SetActive(false);
 	}
@@ -33,9 +36,9 @@ public class HoldNote : MonoBehaviour
 		//Calculate the duration left on the note
 		float remain = holdDuration - consumeDuration;
 
-		center.localScale = center.localScale.setX(remain * spriteSize);
+		center.transform.localScale = center.transform.localScale.setX(remain * spriteSize);
 
-		center.localPosition = center.localPosition.setX(consumeDuration * size);
+		center.transform.localPosition = center.transform.localPosition.setX(consumeDuration * size);
 		consumeAnimation.transform.localPosition = consumeAnimation.transform.localPosition.setX(consumeDuration * size);
 	}
 }

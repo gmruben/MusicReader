@@ -21,6 +21,15 @@ public class EditorMenu : UIMenu
 	public UIButton moveLeftButton;
 	public UIButton moveRightButton;
 
+	public UIButton moveFirstButton;
+	public UIButton moveLastButton;
+
+	public Text keySignatureLabel;
+	public SpriteRenderer keySignatureSprite;
+
+	public UIButton keyUpButton;
+	public UIButton keyDownButton;
+
 	public SymbolButton dottedMinimButton;
 	public SymbolButton minimButton;
 	public SymbolButton dottedCrotchetButton;
@@ -78,6 +87,14 @@ public class EditorMenu : UIMenu
 		moveLeftButton.onClick += onMoveLeftButtonClick;
 		moveRightButton.onClick += onMoveRightButtonClick;
 
+		moveFirstButton.onClick += onMoveFirstButtonClick;
+		moveLastButton.onClick += onMoveLastButtonClick;
+
+		UpdateKey();
+
+		keyUpButton.onClick += onKeyUpButtonClick;
+		keyDownButton.onClick += onKeyDownButtonClick;
+
 		tempoInput.text = tempoValue.ToString();
 		tempoInput.contentType = InputField.ContentType.IntegerNumber;
 		tempoInput.characterLimit = 3;
@@ -86,7 +103,7 @@ public class EditorMenu : UIMenu
 		createSymbolButtons();
 
 		//Load song data
-		editor.Init(trackData);
+		editor.Init(songData, trackData);
 		editor.LoadData();
 	}
 
@@ -159,12 +176,36 @@ public class EditorMenu : UIMenu
 
 	private void onMoveLeftButtonClick()
 	{
-		editor.move(1);
+		editor.MoveLeft(); //move(1);
 	}
 
 	private void onMoveRightButtonClick()
 	{
-		editor.move(-1);
+		editor.MoveRight();
+	}
+
+	private void onMoveFirstButtonClick()
+	{
+		editor.MoveFirst();
+	}
+
+	private void onMoveLastButtonClick()
+	{
+		editor.MoveLast();
+	}
+
+	private void onKeyUpButtonClick()
+	{
+		Debug.Log("UP");
+		songData.key = songData.key.Next();
+		UpdateKey();
+	}
+
+	private void onKeyDownButtonClick()
+	{
+		Debug.Log("DOWN");
+		songData.key = songData.key.Prev();
+		UpdateKey();
 	}
 
 	private void onTempoChange(string value)
@@ -178,5 +219,11 @@ public class EditorMenu : UIMenu
 		}
 
 		tempoValue = intValue;
+	}
+
+	private void UpdateKey()
+	{
+		keySignatureLabel.text = songData.key.name;
+		keySignatureSprite.sprite = Resources.Load<Sprite>("Sprites/KeySignatures/" + songData.key.name + "Key");
 	}
 }

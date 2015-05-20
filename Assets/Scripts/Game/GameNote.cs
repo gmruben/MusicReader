@@ -34,7 +34,7 @@ public class GameNote : MonoBehaviour
 		if (noteData.isHold)
 		{
 			holdNote.gameObject.SetActive(true);
-			holdNote.init(noteData.duration);
+			holdNote.init(noteData);
 		}
 		else
 		{

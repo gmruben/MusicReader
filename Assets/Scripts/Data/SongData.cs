@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class SongData
 {
 	public string id;
+	public Key key;
 	public string name;
 
 	public List<TrackData> trackList = new List<TrackData>();
@@ -18,6 +19,10 @@ public class SongData
 
 		songData.id = jsonValueToString(jsonObject["id"].ToString());
 		songData.name = jsonValueToString(jsonObject["name"].ToString());
+
+		//Check if it exists to make sure it works with previous versions
+		if (jsonObject.ContainsKey("key")) songData.key = Key.ParseString(jsonObject["key"].ToString());
+		songData.key = Key.C;
 
 		JsonArray trackListJsonArray = JsonArray.Parse(jsonObject["trackList"].ToString()) as JsonArray;
 		songData.trackList = jsonArrayToDataList<TrackData>(trackListJsonArray, jsonObjectToTrackData);
@@ -31,6 +36,7 @@ public class SongData
 		
 		jsonObject.Add("id", songData.id);
 		jsonObject.Add("name", songData.name);
+		jsonObject.Add("key", songData.key.name);
 
 		jsonObject.Add("trackList", dataListToJsonArray(songData.trackList, trackDataToJsonObject));
 		

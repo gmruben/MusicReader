@@ -6,28 +6,37 @@ public class EditorPlayer
 {
 	private float tempo = 120.0f;
 	private float elapsedTime;
-	private List<NoteData> noteDataList;
 
+	private int currentNoteIndex;
+	private int currentBarIndex;
+
+	private BarData currentBarData;
 	private NoteData currentNoteData;
+
 	private float nextTime;
 
 	private float secPerBeat;
 
 	private MidiPlayer midiPlayer;
+	private TrackData trackData;
 
-	public EditorPlayer(MidiPlayer midiPlayer)
+	public EditorPlayer(MidiPlayer midiPlayer, TrackData trackData)
 	{
 		this.midiPlayer = midiPlayer;
+		this.trackData = trackData;
 	}
 
-	public void play(List<NoteData> noteDataList)
+	public void play()
 	{
 		elapsedTime = 0;
 		nextTime = 0;
 
-		secPerBeat = 1.0f / (tempo / 60.0f);
+		currentNoteIndex = 0;
+		currentBarIndex = 0;
 
-		this.noteDataList = noteDataList;
+		currentBarData = trackData.barList[currentBarIndex];
+
+		secPerBeat = 1.0f / (tempo / 60.0f);
 
 		checkNextNote();
 	}
@@ -42,17 +51,31 @@ public class EditorPlayer
 	{
 		if (elapsedTime >= nextTime)
 		{
-			currentNoteData = noteDataList[0];
-			noteDataList.RemoveAt(0);
+			currentBarData = trackData.barList[currentBarIndex];
+			currentNoteData = currentBarData.noteList[currentNoteIndex];
 
-			Debug.Log("PLAY NOTE: " + currentNoteData.duration);
-
-			midiPlayer.noteOff();
 			if (!currentNoteData.isRest)
 			{
-				midiPlayer.noteOn();
+				midiPlayer.noteOn(currentNoteData);
 			}
-			nextTime += currentNoteData.duration * secPerBeat;
+
+			//Check if it was the last note of the bar
+			if (currentNoteIndex == currentBarData.noteList.Count - 1)
+			{
+				currentNoteIndex = 0;
+				currentBarIndex++;
+			}
+			else
+			{
+				currentNoteIndex++;
+			}
+
+			currentBarData = trackData.barList[currentBarIndex];
+			currentNoteData = currentBarData.noteList[currentNoteIndex];
+
+			nextTime = ((currentBarData.index * 16) + currentNoteData.start) * (secPerBeat * 0.25f);
+
+			Debug.Log(nextTime + " - " + currentNoteData.start + " - " + (secPerBeat * 0.25f));
 		}
 	}
 }
