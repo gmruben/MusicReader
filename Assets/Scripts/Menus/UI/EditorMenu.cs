@@ -74,7 +74,7 @@ public class EditorMenu : UIMenu
 
 		songTitleLabel.text = songData.name + " - " + trackData.name;
 
-		tempoValue = 120;
+		tempoValue = songData.trackList[0].barList[0].beatsPerMinute;
 
 		newBarButton.onClick += onNewBarButtonClick;
 
@@ -196,14 +196,12 @@ public class EditorMenu : UIMenu
 
 	private void onKeyUpButtonClick()
 	{
-		Debug.Log("UP");
 		songData.key = songData.key.Next();
 		UpdateKey();
 	}
 
 	private void onKeyDownButtonClick()
 	{
-		Debug.Log("DOWN");
 		songData.key = songData.key.Prev();
 		UpdateKey();
 	}
@@ -219,6 +217,7 @@ public class EditorMenu : UIMenu
 		}
 
 		tempoValue = intValue;
+		editor.SetTempo(tempoValue);
 	}
 
 	private void UpdateKey()

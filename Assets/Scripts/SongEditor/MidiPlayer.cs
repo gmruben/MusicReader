@@ -11,7 +11,7 @@ public class MidiPlayer : MonoBehaviour
 	
 	private int midiNote = 60;
 	private int midiNoteVolume = 100;
-	private int midiInstrument = 1;
+	private int midiInstrument = 53;
 
 	private float[] sampleBuffer;
 	private float gain = 1f;

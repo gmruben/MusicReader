@@ -36,6 +36,7 @@ public class CreateNewSongMenu : UIMenu
 		
 		songData.id = songName.Trim();
 		songData.name = songName;
+		songData.key = Key.C;
 
 		return songData;
 	}

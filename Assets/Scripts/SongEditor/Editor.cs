@@ -4,8 +4,11 @@ using System.Collections.Generic;
 
 public class Editor : MonoBehaviour
 {
+	private const float segmentWidth = 75.0f;
 	private const int barSize = 1200;
-	private const float speed = 2.5f;
+	private const float moveSpeed = 2.5f;
+
+	private float playSpeed;
 
 	public GameObject barPrefab;
 
@@ -41,7 +44,7 @@ public class Editor : MonoBehaviour
 
 		if (inPlay)
 		{
-			float posx = cachedTransform.position.x - (500 * Time.deltaTime);
+			float posx = cachedTransform.position.x - (playSpeed * Time.deltaTime);
 			cachedTransform.position = cachedTransform.position.setX(posx);
 
 			editorPlayer.update(Time.deltaTime);
@@ -89,7 +92,7 @@ public class Editor : MonoBehaviour
 		else targetX = targetPosX;
 
 		inMove = true;
-		tween = new Tween(cachedTransform.position.x, targetX, speed);
+		tween = new Tween(cachedTransform.position.x, targetX, moveSpeed);
 	}
 
 	public void MoveLeft()
@@ -118,6 +121,12 @@ public class Editor : MonoBehaviour
 
 	public void play()
 	{
+		int beatsPerMinute = trackData.barList[0].beatsPerMinute;
+		float beatsPerSecond = (float) (beatsPerMinute / 60.0f);
+		float secondsPerBeat = 1.0f / beatsPerSecond;
+
+		playSpeed = segmentWidth * 4.0f / secondsPerBeat;
+
 		inPlay = true;
 		cachedTransform.position = cachedTransform.position.setX(0);
 
@@ -135,7 +144,7 @@ public class Editor : MonoBehaviour
 		List<BarData> barDataList = new List<BarData>();
 		foreach(Bar bar in barList)
 		{
-			BarData barData = new BarData(bar.barData.index, 120);
+			BarData barData = new BarData(bar.barData.index, bar.barData.bpm);
 			barData.noteList = bar.barData.retrieveNoteDataList();
 
 			barDataList.Add(barData);
@@ -150,15 +159,16 @@ public class Editor : MonoBehaviour
 			Bar bar = barList[i];
 			BarData barData = trackData.barList[i];
 
-			bar.LoadData(songData.key, barData.noteList);
+			bar.LoadData(barData.noteList);
 		}
 	}
 
 	public void AddNewBar()
 	{
 		int newBarIndex = trackData.barList.Count;
+		int bpm = trackData.barList[newBarIndex - 1].beatsPerMinute;
 
-		BarData barData = new BarData(newBarIndex, 120);
+		BarData barData = new BarData(newBarIndex, bpm);
 		trackData.barList.Add(barData);
 
 		InstantiateBar(trackData.barList.Count - 1);
@@ -172,7 +182,15 @@ public class Editor : MonoBehaviour
 		bar.transform.parent = cachedTransform;
 		bar.transform.localPosition = new Vector3(index * barSize, 0, 0);
 		
-		bar.Init(index);
+		bar.Init(index, songData.key);
 		barList.Add(bar);
+	}
+
+	public void SetTempo(int beatsPerMinute)
+	{
+		foreach(Bar bar in barList)
+		{
+			bar.barData.bpm = beatsPerMinute;
+		}
 	}
 }

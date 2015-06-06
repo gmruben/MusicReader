@@ -7,6 +7,7 @@ public class EditorBarData
 	private const int numPositions = 16;
 
 	public int index { get; private set; }
+	public int bpm { get; set; }
 	public NoteData[] notes { get; private set; }
 
 	public EditorBarData(int index)

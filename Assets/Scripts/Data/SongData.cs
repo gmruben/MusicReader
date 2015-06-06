@@ -21,7 +21,7 @@ public class SongData
 		songData.name = jsonValueToString(jsonObject["name"].ToString());
 
 		//Check if it exists to make sure it works with previous versions
-		if (jsonObject.ContainsKey("key")) songData.key = Key.ParseString(jsonObject["key"].ToString());
+		if (jsonObject.ContainsKey("key")) songData.key = Key.ParseString(jsonValueToString(jsonObject["key"].ToString()));
 		songData.key = Key.C;
 
 		JsonArray trackListJsonArray = JsonArray.Parse(jsonObject["trackList"].ToString()) as JsonArray;

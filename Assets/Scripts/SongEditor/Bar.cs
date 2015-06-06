@@ -25,8 +25,10 @@ public class Bar : MonoBehaviour
 	private List<Note> noteList;
 	private Key currentKey;
 
-	public void Init(int index)
+	public void Init(int index, Key key)
 	{
+		currentKey = key;
+
 		//Set index label
 		indexLabel.text = (index + 1).ToString();
 
@@ -63,9 +65,10 @@ public class Bar : MonoBehaviour
 
 		NotePitch notePitch = centralNotePitch.Add(currentKey, noteBarIndex);
 		int noteIndex = notePitch.RetrieveNoteIndex(currentKey);
+		int centralNoteIndex = centralNotePitch.RetrieveNoteIndex(currentKey);
 
-		int topLedgerLineIndex = noteBarIndex + 5;
-		int bottomLedgerLineIndex = noteBarIndex - 5;
+		int topLedgerLineIndex = centralNoteIndex + 5;
+		int bottomLedgerLineIndex = centralNoteIndex - 5;
 
 		//Check whether we need to show ledger lines or not
 		topLedgerLines.SetActive(noteIndex >= topLedgerLineIndex);
@@ -168,10 +171,8 @@ public class Bar : MonoBehaviour
 		return Mathf.FloorToInt(position.y / lineHeight);
 	}
 
-	public void LoadData(Key key, List<NoteData> noteList)
+	public void LoadData(List<NoteData> noteList)
 	{
-		currentKey = key;
-
 		foreach (NoteData noteData in noteList)
 		{
 			int noteEnd = noteData.start + noteData.duration;

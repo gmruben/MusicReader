@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class EditorPlayer
 {
-	private float tempo = 120.0f;
+	private float tempo;
 	private float elapsedTime;
 
 	private int currentNoteIndex;
@@ -36,6 +36,7 @@ public class EditorPlayer
 
 		currentBarData = trackData.barList[currentBarIndex];
 
+		tempo = trackData.barList[0].beatsPerMinute;
 		secPerBeat = 1.0f / (tempo / 60.0f);
 
 		checkNextNote();
@@ -74,8 +75,6 @@ public class EditorPlayer
 			currentNoteData = currentBarData.noteList[currentNoteIndex];
 
 			nextTime = ((currentBarData.index * 16) + currentNoteData.start) * (secPerBeat * 0.25f);
-
-			Debug.Log(nextTime + " - " + currentNoteData.start + " - " + (secPerBeat * 0.25f));
 		}
 	}
 }

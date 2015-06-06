@@ -57,7 +57,11 @@ public sealed class Key
 	{
 		//If the dictionary is null, create it
 		if (keyDictionary == null) CreateKeyDictionary();
-		return keyDictionary[stringKey];
+
+		if (keyDictionary.ContainsKey(stringKey)) return keyDictionary[stringKey];
+		else Debug.Log("THE KEY '" + stringKey + "' COULDN'T BE FOUND");
+
+		return null;
 	}
 	
 	private static void CreateKeyDictionary()

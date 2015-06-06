@@ -51,6 +51,16 @@ public class UnitySynthTest : MonoBehaviour
 	// MonoBehaviour is enabled.
 	void Update ()
 	{
+		//Left and right for instruments
+		if (Input.GetKeyDown(KeyCode.RightArrow))
+		{
+			midiInstrument++;
+		}
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
+		{
+			midiInstrument--;
+		}
+
 		//Demo of direct note output
         if (Input.GetKeyDown(KeyCode.A))
             midiStreamSynthesizer.NoteOn (1, midiNote, midiNoteVolume, midiInstrument);
@@ -132,8 +142,6 @@ public class UnitySynthTest : MonoBehaviour
 		GUILayout.EndArea ();
 		
         Event e = Event.current;
-        if (e.isKey)
-            Debug.Log("Detected key code: " + e.keyCode);		
 	}
 	
 	// This function is called when the object
